@@ -28,4 +28,9 @@ class PersonnelResponder extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function log() 
+    {
+        return $this->hasMany(Log::class);
+    }
 }

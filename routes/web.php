@@ -46,14 +46,16 @@ Route::prefix('bfp')->name('bfp.')->group(function () {
     Route::view('dashboard', 'PAGES/BFP/dashboard')->name('dashboard');
 
     Route::controller(BFPPersonnelRespondersController::class)->group(function () {
-        Route::view('dashboard', 'PAGES/BFP/dashboard')->name('dashboard');
-        Route::get('respondersmanagement', 'index')->name('respondersmanagement');
-        Route::get('respondersmanagement/add-responders', 'register')->name('add-responders');
-        Route::post('submit-responders', 'addResponders')->name('submit-responders');
-        Route::delete('delete-responders/{id}', 'destroy')->name('delete-responders');
-        Route::get('respondersmanagement/edit-responders/{id}', 'edit')->name('edit-responders');
-        Route::put('respondersmanagement/update-responders/{id}', 'updateUser')->name('update-responders');
-        Route::get('respondersmanagement/search', 'index')->name('search-responders');
+        Route::view('dashboard', 'PAGES/BFP/dashboard')->name('dashboard'); 
+        Route::get('respondersmanagement', 'index')->name('respondersmanagement'); //done
+        Route::get('respondersmanagement/add-responders', 'register')->name('add-responders'); //done
+        Route::post('submit-responders', 'addResponders')->name('submit-responders'); //done
+        Route::delete('delete-responders/{id}', 'destroy')->name('delete-responders'); //done
+        Route::get('respondersmanagement/edit-responders/{id}', 'edit')->name('edit-responders'); //done
+        Route::put('respondersmanagement/update-responders/{id}', 'updateResponders')->name('update-responders'); //done
+        Route::get('respondersmanagement/search', 'index')->name('search-responders'); //done
+        Route::get('respondersmanagement/view-responders/{id}', 'show')->name('view-responders'); //done
+
     });
 });
 /*

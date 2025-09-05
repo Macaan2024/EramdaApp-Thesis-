@@ -40,7 +40,7 @@ class User extends Authenticatable
         return $this->belongsTo(Agency::class, 'agency_id', 'id');
     }
 
-    public function personnelResponder(): HasMany
+    public function personnelResponder()
     {
             return $this->hasMany(PersonnelResponder::class, 'user_id');
 

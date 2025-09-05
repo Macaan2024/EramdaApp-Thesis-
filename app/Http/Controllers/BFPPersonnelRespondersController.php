@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agency;
+use App\Models\Log;
 use App\Models\PersonnelResponder;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; // already imported at top
 use Illuminate\Support\Facades\Hash;
+
 
 class BFPPersonnelRespondersController extends Controller
 {
@@ -75,14 +77,22 @@ class BFPPersonnelRespondersController extends Controller
             'contact_number' => $request->contact_number,
         ]);
 
-
-
-        PersonnelResponder::create([
+        //recording persnnelresponder registered
+        $personnelResponder = PersonnelResponder::create([
             'user_id' => $user->id,
             'longitudeLocation' => null,
             'latitudeLocation' => null,
             'availabilityStatus' => 'available'
         ]);
+
+        //logs records registers
+        Log::create([
+            'interaction_type' => 'Add Responder', // descriptive action
+            'user_id' => auth()->user()->id,
+            'agency_id' => auth()->user()->agency_id,
+            'personnel_responder_id' => $personnelResponder->id,
+        ]);
+
 
         // Return with message
         return $user
@@ -101,33 +111,82 @@ class BFPPersonnelRespondersController extends Controller
         return view('PAGES/BFP/edit-personnel-responders', compact('responders'));
     }
 
-    public function updateBarangay(Request $request, $id)
+    public function updateResponders(Request $request, $id)
     {
-
-        $responders = PersonnelResponder::findorFail($id);
+        $user = User::findOrFail($id);
 
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'agency_id' => 'required|exists:agencies,id',
-            'longitudeLocation' => 'required|numeric',
-            'latitudeLocation' => 'required|numeric',
-            'availabilityStatus' => 'required|in:available,not available',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'lastname' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'gender' => 'required|in:m,f',
+            'position' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:20',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $responders->update($request->all());
+        $data = $request->only([
+            'email',
+            'lastname',
+            'firstname',
+            'gender',
+            'position',
+            'contact_number',
+        ]);
 
-
-        if ($responders) {
-            return redirect()->route('bfp.manage-personnel-responders')->with('success', 'Successfully Modify Personnel Responders');
-        } else {
-            return redirect()->back()->with('error', 'Failed to Edit  Personnel Responder')->withInput();
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('photos', 'public');
+            $data['photo'] = $photoPath;
         }
+
+        $updated = $user->update($data);
+
+        $responder = PersonnelResponder::where('user_id', $id)->first();
+        Log::create([
+            'interaction_type' => 'Update Responder',
+            'user_id' => auth()->id(),
+            'agency_id' => auth()->user()->agency_id,
+            'personnel_responder_id' => $responder->id ?? null
+        ]);
+
+        return $updated
+            ? redirect()->route('bfp.respondersmanagement')->with('success', 'Successfully updated personnel responder.')
+            : redirect()->back()
+            ->withErrors(['error' => 'Update failed, please try again.'])
+            ->withInput();
     }
+
+    public function show($id)
+    {
+        $responder = PersonnelResponder::with('user')->findOrFail($id);
+
+        return view('PAGES/BFP/view-personnel-responders', compact('responder'));
+    }
+
+
 
     public function destroy($id)
     {
-        $responders = PersonnelResponder::findOrFail($id)->delete();
+        $responder = PersonnelResponder::where('user_id', $id)->first();
 
-        return redirect()->back()->with('success', 'Successfully Delete Barangay');
+        if ($responder) {
+            $user = $responder->user; // keep reference to the user before deleting
+
+            // Create log entry before deleting
+            Log::create([
+                'interaction_type' => 'Delete Responder',
+                'user_id' => auth()->user()->id,
+                'agency_id' => auth()->user()->agency_id,
+                'personnel_responder_id' => $responder->id, // ✅ store responder ID
+            ]);
+
+            // Delete responder
+            $responder->delete();
+
+            // Delete user
+            $user->delete();
+        }
+
+        return redirect()->back()->with('success', 'Successfully deleted personnel responder.');
     }
 }

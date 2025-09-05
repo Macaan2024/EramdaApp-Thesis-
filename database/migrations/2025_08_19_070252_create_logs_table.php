@@ -14,20 +14,20 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->string('interaction_type');
-            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('personnel_responder_id')->constrained('personnel_responders')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('emergency_vehicle_id')->constrained('emergency_vehicles')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('incident_type_id')->constrained('incident_types')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('injury_id')->constrained('injuries')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('barangay_id')->constrained('barangays')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('agency_id')->constrained('agencies')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('attendance_id')->constrained('attendances')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('deployment_id')->constrained('deployments')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('treatment_service_id')->constrained('treatment_services')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('submit_report_id')->constrained('submit_reports')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('report_action_id')->constrained('report_actions')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('emergency_room_bed_id')->constrained('emergency_room_beds')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('request_id')->constrained('requests')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('personnel_responder_id')->nullable()->constrained('personnel_responders')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('emergency_vehicle_id')->nullable()->constrained('emergency_vehicles')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('incident_type_id')->nullable()->constrained('incident_types')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('injury_id')->nullable()->constrained('injuries')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('barangay_id')->nullable()->constrained('barangays')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('agency_id')->nullable()->constrained('agencies')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('attendance_id')->nullable()->constrained('attendances')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('deployment_id')->nullable()->constrained('deployments')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('treatment_service_id')->nullable()->constrained('treatment_services')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('submit_report_id')->nullable()->constrained('submit_reports')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('report_action_id')->nullable()->constrained('report_actions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('emergency_room_bed_id')->nullable()->constrained('emergency_room_beds')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('request_id')->nullable()->constrained('requests')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps(); // created_at and updated_at
         });
     }
