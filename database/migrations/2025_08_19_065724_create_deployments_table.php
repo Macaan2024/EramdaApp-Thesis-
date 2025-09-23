@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('deployments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('emergency_vehicle_id')->constrained('emergency_vehicles')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('personnel_responder_id')->constrained('personnel_responders');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('report_action_id')->constrained('report_actions');
             $table->timestamps();
         });

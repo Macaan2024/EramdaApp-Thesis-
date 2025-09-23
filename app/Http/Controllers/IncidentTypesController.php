@@ -6,7 +6,7 @@ use App\Models\Barangay;
 use App\Models\IncidentType;
 use Illuminate\Http\Request;
 
-class AdminIncidentTypesController extends Controller
+class IncidentTypesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -23,18 +23,11 @@ class AdminIncidentTypesController extends Controller
         return view('PAGES/admin/manage-incident-types', compact('incident_types'));
     }
 
-    public function create () {
-        $barangays = Barangay::all();
-        $incidentTypes = IncidentType::all();
-
-        return view('PAGES/BFP/add-reports'. compact());
-    }
-
     public function addIncidentTypes(Request $request)
     {
         $request->validate([
             'category' => 'required|string|max:255',
-            'incident_name' =>  'required|string|max:255',
+            'incident_name' =>  'required|string|max:255|unique:incident_types,incident_name',
         ]);
 
         $incident_types = IncidentType::create([
@@ -44,7 +37,7 @@ class AdminIncidentTypesController extends Controller
         ]);
 
         if ($incident_types) {
-            return redirect()->route('manage-incident-types.admin')->with('success', 'Successfully Register Incident Types');
+            return redirect()->route('admin.incident-types')->with('success', 'Successfully Register Incident Types');
         } else {
             return redirect()->back()->with('error', 'Failed to Register Incident Types');
         }
@@ -77,7 +70,7 @@ class AdminIncidentTypesController extends Controller
 
 
         if ($incident_types) {
-            return redirect()->route('manage-incident-types.admin')->with('success', 'Successfully Edit Incident Types');
+            return redirect()->route('admin.incident-types')->with('success', 'Successfully Edit Incident Types');
         }
     }
 
@@ -88,6 +81,6 @@ class AdminIncidentTypesController extends Controller
     {
         $incident_types = IncidentType::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'Successfully Delete Incident Types');
+        return $incident_types ? redirect()->back()->with('success', 'Successfully Delete Incident Types') : redirect()->back()->with('errors', 'Incident types delete fail');
     }
 }

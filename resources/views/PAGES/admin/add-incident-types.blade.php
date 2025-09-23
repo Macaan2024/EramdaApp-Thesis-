@@ -2,7 +2,7 @@
     <x-partials.toast-messages />
     <form
         class="max-w-sm mx-auto"
-        action="{{ route('submit-incident-types.admin') }}"
+        action="{{ route('admin.submit-incident-types') }}"
         method="POST">
 
         @csrf

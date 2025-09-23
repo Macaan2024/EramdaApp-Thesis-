@@ -86,7 +86,7 @@ class AuthenticationController extends Controller
             if ($user) {
                 // Admin override
                 if ($user->user_type === 'admin') {
-                    return redirect()->route('dashboard.admin');
+                    return redirect()->route('admin.dashboard');
                 }
 
                 // Check agency type dynamically

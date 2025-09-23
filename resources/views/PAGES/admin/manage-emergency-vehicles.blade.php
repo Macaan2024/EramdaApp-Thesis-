@@ -14,7 +14,7 @@
     <h6 class="font-medium font-[Poppins] text-[14px] mb-3">Emergency Vehicles Management</h6>
     <div class="flex flex-row justify-between items-center">
         <!-- Search Form -->
-        <form class="max-w-md w-full" action="{{ route('search-emergency-vehicles.admin') }}" method="GET">
+        <form class="max-w-md w-full" action="{{ route('bfp.search-vehicles') }}" method="GET">
             <label for="default-search" class="sr-only">Search</label>
             <div class="relative">
                 <!-- Search Icon -->
@@ -40,7 +40,7 @@
                 </button>
             </div>
         </form>
-        <a href="{{ route('add-emergency-vehicles.admin') }}" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Emergency Vehicles</a>
+        <a href="{{ route('bfp.add-vehicles') }}" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Emergency Vehicles</a>
     </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -94,7 +94,7 @@
                 @empty
                 <tr>
                     <td colspan="6" class="text-center text-gray-500 p-4">
-                        🚫 No Barangay found.
+                        🚫 No Vehicles found.
                     </td>
                 </tr>
 

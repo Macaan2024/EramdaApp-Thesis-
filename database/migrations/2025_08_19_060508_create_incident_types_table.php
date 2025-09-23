@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('incident_types', function (Blueprint $table) {
             $table->id();
             $table->string('category');
-            $table->string('incident_name');
+            $table->string('incident_name')->unique();
             $table->timestamps();
         });
     }

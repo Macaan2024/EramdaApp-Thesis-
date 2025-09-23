@@ -1,10 +1,9 @@
 <x-layout.layout>
-
     <x-partials.toast-messages />
     <h6 class="font-medium font-[Poppins] text-[14px] mb-3">Barangay Management</h6>
     <div class="flex flex-row justify-between items-center">
         <!-- Search Form -->
-        <form class="max-w-md w-full" action="{{ route('search-barangay.admin') }}" method="GET">
+        <form class="max-w-md w-full" action="{{ route('admin.search-barangay') }}" method="GET">
             <label for="default-search" class="sr-only">Search</label>
             <div class="relative">
                 <!-- Search Icon -->
@@ -30,7 +29,7 @@
                 </button>
             </div>
         </form>
-        <a href="{{ route('add-barangay.admin') }}" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Barangay</a>
+        <a href="{{ route('admin.add-barangay') }}" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Barangay</a>
     </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -62,13 +61,13 @@
                     <td class="px-6 py-4">{{ $barangay->latitude }}</td>
                     <td class="px-6 py-4">
                         <div class="flex flex-row gap-1 items-center">
-                            <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="{{ route('edit-barangay.admin', $barangay->id) }}"><span class="material-symbols-outlined">
+                            <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="{{ route('admin.edit-barangay', $barangay->id) }}"><span class="material-symbols-outlined">
                                     eyeglasses_2
                                 </span>View</a>
-                            <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="{{ route('edit-barangay.admin', $barangay->id) }}"><span class="material-symbols-outlined">
+                            <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="{{ route('admin.edit-barangay', $barangay->id) }}"><span class="material-symbols-outlined">
                                     edit
                                 </span>Edit</a>
-                            <form action="{{ route('delete-barangay.admin', $barangay->id) }}" method="POST">
+                            <form action="{{ route('admin.delete-barangay', $barangay->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
 

@@ -1,7 +1,7 @@
 <x-layout.layout>
     <form
         class="max-w-sm mx-auto"
-        action="{{ route('update-incident-types.admin', $incident_types->id) }}"
+        action="{{ route('admin.update-incident-types', $incident_types->id) }}"
         method="POST">
 
         @csrf

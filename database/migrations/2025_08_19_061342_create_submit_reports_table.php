@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('submit_reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->OnDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('agency_id')->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('barangay_id')->constrained('barangays')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('incident_types_id')->constrained('incident_types')->onDelete('cascade')->onUpdate('cascade');
             $table->float('incidentLatitude')->nullable();
             $table->float('incidentLongitude')->nullable();
-            $table->integer('numberOfDeaths');
-            $table->integer('numberOfInjuries');
-            $table->time('time');
+            $table->integer('numberOfDeaths')->nullable();
+            $table->integer('numberOfInjuries')->nullable();
+            $table->string('time');
             $table->string('day');
             $table->string('month');
-            $table->string('status');
+            $table->string('status')->nullable();
             $table->string('description');
             $table->timestamps();
         });

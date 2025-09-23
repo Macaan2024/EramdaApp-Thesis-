@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('request_id')->constrained('requests')->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('submit_report_id')->constrained('submit_reports')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('agencies_id')->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('agency_id')->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
             $table->string('actionResponse');
             $table->timestamps();
         });

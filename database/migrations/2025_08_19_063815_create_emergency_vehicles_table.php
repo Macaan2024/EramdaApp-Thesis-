@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('emergency_vehicles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('agencies_id')->nullable()->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('agency_id')->nullable()->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
             $table->string('vehicleTypes');
-            $table->string('plateNumber');
+            $table->string('plateNumber')->unique();
             $table->string('vehicle_photo')->nullable();
             $table->string('availabilityStatus');
             $table->timestamps();

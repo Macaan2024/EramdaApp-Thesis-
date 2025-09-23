@@ -30,9 +30,13 @@ class User extends Authenticatable
         'firstname',
         'gender',
         'position',
-        'contact_number',
         'photo',
-        'status'
+        'contact_number',
+        'account_status',
+        'availability_status',
+        'last_seen_longitude',
+        'last_seen_latitude',
+        'location_updated_at',
     ];
 
     public function agency()
@@ -42,8 +46,7 @@ class User extends Authenticatable
 
     public function personnelResponder()
     {
-            return $this->hasMany(PersonnelResponder::class, 'user_id');
-
+        return $this->hasMany(PersonnelResponder::class, 'user_id');
     }
 
     /**

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Log extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'interaction_type',
         'user_id',
         'personnel_responder_id',
@@ -26,7 +26,12 @@ class Log extends Model
     ];
 
 
-    public function personnelResponder() {
+    public function personnelResponder()
+    {
         return $this->belongsTo(PersonnelResponder::class, 'personnel_responder_id', 'id');
+    }
+    public function emergencyVehicle()
+    {
+        return $this->belongsTo(EmergencyVehicle::class, 'emergency_responder_id', 'id');
     }
 }

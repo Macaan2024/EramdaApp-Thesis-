@@ -1,207 +1,162 @@
 <x-layout.layout>
-
     <x-partials.toast-messages />
 
-
-    @if ($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 text-[12px] font-[Poppins] px-4 py-3 rounded relative mb-4">
-        <ul>
-            @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
-    <form
-        class="max-w-sm mx-auto"
-        action="{{ route('update-user.admin', $user->id) }}"
+    <form class="max-w-3xl mx-auto bg-gray-100 shadow-lg rounded-2xl p-8 space-y-6"
+        action="{{ route('admin.update-user', $user->id) }}"
         method="POST"
         enctype="multipart/form-data">
 
         @csrf
         @method('PUT')
 
-        <h4 class="my-5 text-center font-[Poppins] text-[14px] font-medium">Edit User</h4>
-        <!-- Selections of Agencies -->
-        <div class="mb-5">
-            <label
-                for="agencies"
-                class="block mb-2 text-[12px] font-[Poppins] text-gray-900 dark:text-white">Select Agencies</label>
-            <select
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-[12px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 font-[Poppins]"
-                name="agencies">
+        <!-- Heading -->
+        <div class="text-center">
+            <h2 class="text-lg font-semibold text-gray-800 font-[Poppins]">Edit User</h2>
+            <p class="text-gray-500 text-[12px] font-[Poppins]">Update the details of this user</p>
+        </div>
 
-                <!-- Default option -->
-                <option disabled @selected(!old('agencies', $user->agencies))>Choose Agencies</option>
+        <!-- Grid fields -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                <!-- Agencies options -->
-                <option value="BFP" @selected(old('agencies', $user->agencies) === 'BFP')>
-                    Bureau of Fire Protection (BFP)
-                </option>
-                <option value="BDRRMC" @selected(old('agencies', $user->agencies) === 'BDRRMC')>
-                    Barangay Disaster Risk Reduction and Management Committe (BDRRMC)
-                </option>
-                <option value="Hospital" @selected(old('agencies', $user->agencies) === 'Hospital')>
-                    Hospitals
-                </option>
-                <option value="CDRRMO" @selected(old('agencies', $user->agencies) === 'CDRRMO')>
-                    City Disaster Risk Reduction and Management Office
-                </option>
-            </select>
-        </div>
-        <!-- Selections of Roles -->
-        <div class="mb-5">
-            <label for="user_type" class="font-[Poppins] text-[12px] block mb-2 text-gray-900 dark:text-white">Select Roles</label>
-            <select
-                class="font-[Poppins] text-[12px] bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                name="user_type">
+            <!-- Agency -->
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Select Agency</label>
+                <select name="agency_id"
+                    class="w-full rounded-lg border @error('agency_id') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500">
+                    <option disabled>Choose Agencies</option>
+                    @foreach($agencies as $agency)
+                        <option value="{{ $agency->id }}" @selected(old('agency_id', $user->agency_id) == $agency->id)>
+                            {{ $agency->agencyNames }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('agency_id')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
 
-                <!-- Default option -->
-                <option disabled @selected(!old('user_type', $user->user_type))>Choose Roles</option>
+            <!-- Role -->
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Select Role</label>
+                <select name="user_type"
+                    class="w-full rounded-lg border @error('user_type') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500">
+                    <option disabled>Choose Role</option>
+                    <option value="Operation Officer" @selected(old('user_type', $user->user_type) === 'Operation Officer')>
+                        Operation Officer
+                    </option>
+                    <option value="Nurse Chief" @selected(old('user_type', $user->user_type) === 'Nurse Chief')>
+                        Nurse Chief
+                    </option>
+                </select>
+                @error('user_type')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
 
-                <!-- Roles -->
-                <option value="Operation Officer" @selected(old('user_type', $user->user_type) === 'Operation Officer')>
-                    Operation Officer
-                </option>
-                <option value="Nurse Chief" @selected(old('user_type', $user->user_type) === 'Nurse Chief')>
-                    Nurse Chief
-                </option>
-            </select>
-        </div>
-        <!-- Email -->
-        <div class="mb-5">
-            <label
-                for="email"
-                class="font-[Poppins] text-[12px] block mb-2 text-gray-900 dark:text-white">Email</label>
-            <input
-                type="email"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                placeholder="name@flowbite.com"
-                name="email"
-                value=" {{ $user->email }} "
-                required />
-        </div>
-        <!-- password -->
-        <div class="mb-5">
-            <label
-                for="password"
-                class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white">Password</label>
-            <input
-                type="password"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                placeholder="Enter Password"
-                name="password"
-                required />
-        </div>
-        <!-- Confirm Password -->
-        <div class="mb-5">
-            <label for="password_confirmation" class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white">Confirm password</label>
-            <input
-                type="password"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                name="password_confirmation"
-                placeholder="Confirm Password"
-                required />
-        </div>
-        <!-- user lastname -->
-        <div class="mb-5">
-            <label
-                for="lastname"
-                class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white">Lastname</label>
-            <input
-                type="text"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                name="lastname"
-                placeholder="Macaan"
-                value=" {{ $user->lastname }}"
-                required />
-        </div>
-        <!-- user firstname -->
-        <div class="mb-5">
-            <label
-                for="firstname"
-                class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white">Firstname</label>
-            <input
-                type="text"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                name="firstname"
-                placeholder="Casan"
-                value="{{ $user->firstname }}"
-                required />
-        </div>
-        <!-- user gender -->
-        <div class="mb-5">
-            <div class="flex">
-                <div class="flex items-center me-4">
-                    <input
-                        type="radio"
-                        id="gender-m"
-                        value="m"
-                        name="gender"
-                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        @checked(old('gender', $user->gender) === 'm')>
-                    <label
-                        for="gender-m"
-                        class="ms-2 font-[Poppins] text-[12px] text-gray-900 dark:text-gray-300">
-                        Male
+            <!-- Email -->
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Email</label>
+                <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                    class="w-full rounded-lg border @error('email') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
+                @error('email')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Lastname -->
+            <div>
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Lastname</label>
+                <input type="text" name="lastname" value="{{ old('lastname', $user->lastname) }}"
+                    class="w-full rounded-lg border @error('lastname') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
+                @error('lastname')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Firstname -->
+            <div>
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Firstname</label>
+                <input type="text" name="firstname" value="{{ old('firstname', $user->firstname) }}"
+                    class="w-full rounded-lg border @error('firstname') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
+                @error('firstname')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Gender -->
+            <div class="md:col-span-2">
+                <span class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Gender</span>
+                <div class="flex gap-6">
+                    <label class="flex items-center gap-2 text-[12px] font-[Poppins]">
+                        <input type="radio" value="m" name="gender"
+                            {{ old('gender', $user->gender) === 'm' ? 'checked' : '' }}
+                            class="text-blue-600 focus:ring-blue-500"> Male
+                    </label>
+                    <label class="flex items-center gap-2 text-[12px] font-[Poppins]">
+                        <input type="radio" value="f" name="gender"
+                            {{ old('gender', $user->gender) === 'f' ? 'checked' : '' }}
+                            class="text-blue-600 focus:ring-blue-500"> Female
                     </label>
                 </div>
-                <div class="flex items-center me-4">
-                    <input
-                        type="radio"
-                        id="gender-f"
-                        value="f"
-                        name="gender"
-                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        @checked(old('gender', $user->gender) === 'f')>
-                    <label
-                        for="gender-f"
-                        class="ms-2 font-[Poppins] text-[12px] text-gray-900 dark:text-gray-300">
-                        Female
-                    </label>
+                @error('gender')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Position -->
+            <div>
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Position</label>
+                <input type="text" name="position" value="{{ old('position', $user->position) }}"
+                    class="w-full rounded-lg border @error('position') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
+                @error('position')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Contact Number</label>
+                <input type="text" name="contact_number" value="{{ old('contact_number', $user->contact_number) }}"
+                    class="w-full rounded-lg border @error('contact_number') border-red-500 @else border-gray-300 @enderror
+                    px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
+                @error('contact_number')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Upload photo -->
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Upload Photo</label>
+                <input type="file" name="photo" id="photoUpload"
+                    class="w-full border @error('photo') border-red-500 @else border-gray-300 @enderror
+                    rounded-lg cursor-pointer text-[12px] font-[Poppins]">
+
+                <div class="mt-3 flex justify-start">
+                    <img id="photoPreview"
+                        src="{{ $user->photo ? asset('storage/' . $user->photo) : '' }}"
+                        alt="Current Photo"
+                        class="w-24 h-24 object-cover rounded-sm border-2 border-blue-400 shadow-md {{ $user->photo ? '' : 'hidden' }}">
                 </div>
+
+                @error('photo')
+                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                @enderror
             </div>
         </div>
-        <!-- user position information -->
-        <div class="mb-5">
-            <label
-                for="position"
-                class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white">Position</label>
-            <input
-                type="text"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                name="position"
-                value="{{ $user->position }}"
-                required />
-        </div>
-        <!-- user contact number -->
-        <div class="mb-5">
-            <label
-                for="contact_number"
-                class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white">Contact Number</label>
-            <input
-                type="text"
-                class="font-[Poppins] text-[12px] shadow-xs bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-xs-light"
-                name="contact_number"
-                placeholder="+63923456789"
-                value=" {{ $user->contact_number }}"
-                required />
-        </div>
-        <!-- upload picture -->
-        <div class="mb-5">
-            <label
-                class="block mb-2 font-[Poppins] text-[12px] text-gray-900 dark:text-white"
-                for="photo">Upload file</label>
-            <input
-                class="block w-full text-[12px] font-[Poppins] text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                type="file"
-                name="photo">
-        </div>
-        <button
-            type="submit"
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] font-semibold px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full">Submit</button>
+
+        <!-- Submit -->
+        <button type="submit"
+            class="w-full mt-4 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300
+               font-medium rounded-lg px-5 py-2.5 transition text-[12px] font-[Poppins]">
+            Update User
+        </button>
     </form>
 
-<x-partials.stack-js/>
-
+    <x-partials.stack-js />
 </x-layout.layout>

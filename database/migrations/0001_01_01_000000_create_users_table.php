@@ -24,7 +24,11 @@ return new class extends Migration
             $table->string('position');
             $table->string('photo', 2080)->nullable();
             $table->string('contact_number'); //update ERD
-            $table->string('account_status')->default('pending');
+            $table->string('account_status')->default('Pending');
+            $table->string('availability_status')->nullable();
+            $table->string('last_seen_longitude')->nullable();
+            $table->string('last_seen_latitude')->nullable();
+            $table->date('location_updated_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

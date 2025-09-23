@@ -4,22 +4,22 @@
     <!-- Page Title -->
     <div class="flex justify-between items-center mb-5">
         <h6 class="text-sm font-[Poppins] font-semibold text-gray-800">
-            Personnel Responders Management
+            Emergency Vehicles Management
         </h6>
-        <!-- Add Responder Button -->
-        <a href="{{ route('bfp.add-responders') }}"
+        <!-- Add Vehicle Button -->
+        <a href="{{ route('bfp.add-vehicles') }}"
             class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 
                   font-medium rounded-lg text-xs font-[Poppins] px-4 py-2">
-            + Add Responder
+            + Add Vehicle
         </a>
     </div>
 
     <!-- Search -->
     <div class="mb-5">
-        <form action="{{ route('bfp.search-responders') }}" method="GET" class="w-full max-w-md">
+        <form action="{{ route('bfp.search-vehicles') }}" method="GET" class="w-full max-w-md">
             <div class="relative">
                 <input type="search" name="search" value="{{ request('search') }}"
-                    placeholder="Search by name..."
+                    placeholder="Search by plate number..."
                     class="block w-full p-2.5 ps-10 text-xs font-[Poppins] border border-gray-300 rounded-lg bg-gray-50
                           focus:ring-blue-500 focus:border-blue-500" />
                 <button type="submit"
@@ -37,27 +37,24 @@
             <thead class="bg-blue-100 text-gray-700">
                 <tr>
                     <th class="px-4 py-3 text-left">No</th>
-                    <th class="px-4 py-3 text-left">Image</th>
-                    <th class="px-4 py-3 text-left">Name</th>
-                    <th class="px-4 py-3 text-left">Position</th>
-                    <th class="px-4 py-3 text-left">Contact Number</th>
-                    <th class="px-4 py-3 text-left">Gender</th>
-                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-left">Photo</th>
+                    <th class="px-4 py-3 text-left">Plate Number</th>
+                    <th class="px-4 py-3 text-left">Availability</th>
                     <th class="px-4 py-3 text-left">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($responders as $index => $responder)
+                @forelse ($vehicles as $index => $vehicle)
                 <tr class="bg-white border-b hover:bg-gray-50">
                     <!-- Row Number -->
-                    <td class="px-4 py-3">{{ $responders->firstItem() + $index }}</td>
+                    <td class="px-4 py-3">{{ $vehicles->firstItem() + $index }}</td>
 
-                    <!-- Responsive Image -->
+                    <!-- Photo -->
                     <td class="px-4 py-3">
-                        @if($responder->user->photo)
+                        @if($vehicle->vehicle_photo)
                         <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full overflow-hidden border">
-                            <img src="{{ asset('storage/' . $responder->user->photo) }}"
-                                alt="Responder Photo"
+                            <img src="{{ asset('storage/' . $vehicle->vehicle_photo) }}"
+                                alt="Vehicle Photo"
                                 class="w-full h-full object-cover">
                         </div>
                         @else
@@ -65,42 +62,30 @@
                         @endif
                     </td>
 
-                    <!-- Full Name -->
-                    <td class="px-4 py-3">
-                        {{ $responder->user->firstname }} {{ $responder->user->lastname }}
-                    </td>
+                    <!-- Plate Number -->
+                    <td class="px-4 py-3">{{ $vehicle->plateNumber }}</td>
 
-                    <!-- Position -->
-                    <td class="px-4 py-3">{{ $responder->user->position }}</td>
-
-                    <!-- Contact -->
-                    <td class="px-4 py-3">{{ $responder->user->contact_number }}</td>
-
-                    <!-- Genders -->
-                    <td class="px-4 py-3">
-                        {{ $responder->user->gender == 'm' ? 'Male' : ($responder->user->gender == 'f' ? 'Female' : 'N/A') }}
-                    </td>
-
-                    <!-- Availability Status -->
+                    <!-- Availability -->
                     <td class="px-4 py-3">
                         <span class="px-2 py-1 rounded text-white text-xs font-[Poppins]
-                                {{ $responder->availabilityStatus === 'available' ? 'bg-green-500' : 'bg-red-500' }}">
-                            {{ ucfirst($responder->availabilityStatus) }}
+                                {{ $vehicle->availabilityStatus === 'Available' ? 'bg-green-500' : 'bg-red-500' }}">
+                            {{ ucfirst($vehicle->availabilityStatus) }}
                         </span>
                     </td>
 
                     <!-- Actions -->
                     <td class="px-4 py-3">
                         <div class="flex flex-wrap gap-2 items-center">
-                            <a href="{{ route('bfp.view-responders', $responder->id) }}"
+                            <a href="{{ route('bfp.view-vehicles', $vehicle->id) }}"
                                 class="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-xs font-[Poppins]">
                                 View
                             </a>
-                            <a href="{{ route('bfp.edit-responders', $responder->id) }}"
+                            <a href="{{ route('bfp.edit-vehicles', $vehicle->id) }}"
                                 class="px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white text-xs font-[Poppins]">
                                 Edit
                             </a>
-                            <form action="{{ route('bfp.delete-responders', $responder->user->id) }}" method="POST">
+                            <form action="{{ route('bfp.delete-vehicles', $vehicle->id) }}" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this vehicle?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
@@ -108,14 +93,13 @@
                                     Delete
                                 </button>
                             </form>
-
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="px-4 py-3 text-center text-gray-500">
-                        No responders found.
+                    <td colspan="7" class="px-4 py-3 text-center text-gray-500">
+                        No vehicles found.
                     </td>
                 </tr>
                 @endforelse
@@ -125,7 +109,7 @@
 
     <!-- Pagination -->
     <div class="mt-5 flex justify-center">
-        {{ $responders->appends(request()->query())->links() }}
+        {{ $vehicles->appends(request()->query())->links() }}
     </div>
 
     <x-partials.stack-js />

@@ -13,10 +13,16 @@ class EmergencyVehicle extends Model
 
 
     protected $fillable = [
-        'agencies_id',
+        'agency_id',
         'vehicleTypes',
         'plateNumber',
         'vehicle_photo',
         'availabilityStatus',
     ];
+
+
+    public function log()
+    {
+        return $this->hasMany(Log::class);
+    }
 }

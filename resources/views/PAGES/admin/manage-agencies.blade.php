@@ -4,7 +4,7 @@
     <h6 class="font-medium font-[Poppins] text-[14px] mb-3">Agencies Management</h6>
     <div class="flex flex-row justify-between items-center">
         <!-- Search Form -->
-        <form class="max-w-md w-full" action="{{ route('search-agencies.admin') }}" method="GET">
+        <form class="max-w-md w-full" action="{{ route('admin.search-agency') }}" method="GET">
             <label for="default-search" class="sr-only">Search</label>
             <div class="relative">
                 <!-- Search Icon -->
@@ -30,7 +30,7 @@
                 </button>
             </div>
         </form>
-        <a href="{{ route('add-agencies.admin') }}" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Agency</a>
+        <a href="{{ route('admin.add-agency') }}" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add Agency</a>
     </div>
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-5">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -43,16 +43,7 @@
                         Agency Types
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Address
-                    </th>
-                    <th scope="col" class="px-6 py-3">
                         Emails
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Longitude
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Latitude
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Status
@@ -67,11 +58,8 @@
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-[12px] font-[Roboto] text-black">
                     <td class="px-6 py-4">{{ $agency->agencyNames }}</td>
                     <td class="px-6 py-4">{{ $agency->agencyTypes }}</td>
-                    <td class="px-6 py-4">{{ $agency->address }}</td>
                     <td class="px-6 py-4">{{ $agency->email }}</td>
-                    <td class="px-6 py-4">{{ $agency->longitude }}</td>
-                    <td class="px-6 py-4">{{ $agency->latitude }}</td>
-                     <td class="px-6 py-4">
+                    <td class="px-6 py-4">
                         <span class="px-2 py-1 rounded-full text-[12px] font-[Poppins] 
                             {{ $agency->activeStatus === 'Active' ? 'bg-green-100 text-green-700' : ($agency->activeStatus === 'Inactive' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
                             {{ $agency->activeStatus }}
@@ -82,10 +70,10 @@
                             <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="#"><span class="material-symbols-outlined">
                                     eyeglasses_2
                                 </span>View</a>
-                            <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="{{ route('edit-agencies.admin', $agency->id) }}"><span class="material-symbols-outlined">
+                            <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="#"><span class="material-symbols-outlined">
                                     edit
                                 </span>Edit</a>
-                            <form action="{{ route('delete-agencies.admin', $agency->id) }}" method="POST">
+                            <form action="#" method="POST">
                                 @csrf
                                 @method('DELETE')
 

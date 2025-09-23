@@ -14,7 +14,7 @@ class Barangay extends Model
 
   protected $fillable = [
     'barangayNames',
-    'municipals',
+    'city',
     'longitude',
     'latitude',
   ];

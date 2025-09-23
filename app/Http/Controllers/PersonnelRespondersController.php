@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Agency;
 use App\Models\Log;
-use App\Models\PersonnelResponder;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // already imported at top
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-
-class BFPPersonnelRespondersController extends Controller
+class PersonnelRespondersController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,24 +28,20 @@ class BFPPersonnelRespondersController extends Controller
             })
             ->paginate(10);
 
-        return view('PAGES/BFP/manage-personnel-responders', compact('responders'));
+        return view('PAGES/BFP_BDRRMC/manage-personnel-responders', compact('responders'));
     }
 
 
     public function register()
     {
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'You must be logged in');
-        }
-
         $agency = Auth::user()->agency;
 
-        return view('PAGES/BFP/add-personnel-responders', compact('agency'));
+        return view('PAGES/BFP_BDRRMC/add-personnel-responders', compact('agency'));
     }
 
     public function addResponders(Request $request)
     {
-        // Validate form input first
+        // Validate form input
         $request->validate([
             'agency_id' => 'required|exists:agencies,id',
             'user_type' => 'required|string|max:255',
@@ -60,6 +53,8 @@ class BFPPersonnelRespondersController extends Controller
             'position' => 'required|string|max:255',
             'photo' => 'nullable|image|max:2048',
             'contact_number' => 'required|string|max:255',
+            'account_status' => 'required|in:Pending,Deactive,Activate',
+            'availability_status' => 'required|in:Available,Unavailable',
         ]);
 
         // Handle photo upload
@@ -68,7 +63,7 @@ class BFPPersonnelRespondersController extends Controller
             : null;
 
         // Create user
-        $user = User::create([
+        $responder = User::create([
             'agency_id' => $request->agency_id,
             'user_type' => $request->user_type,
             'email' => $request->email,
@@ -79,45 +74,32 @@ class BFPPersonnelRespondersController extends Controller
             'position' => $request->position,
             'photo' => $photoPath,
             'contact_number' => $request->contact_number,
+            'account_status' => $request->account_status,
+            'availability_status' => $request->availability_status,
         ]);
 
-        //recording persnnelresponder registered
-        $personnelResponder = PersonnelResponder::create([
-            'user_id' => $user->id,
-            'longitudeLocation' => null,
-            'latitudeLocation' => null,
-            'availabilityStatus' => 'available'
-        ]);
-
-        //logs records registers
+        // Log action
         Log::create([
-            'interaction_type' => 'Add Responder', // descriptive action
-            'user_id' => auth()->user()->id,
+            'interaction_type' => 'Add Responder',
             'agency_id' => auth()->user()->agency_id,
-            'personnel_responder_id' => $personnelResponder->id,
+            'user_id' => $responder->id,
         ]);
 
-
-        // Return with message
-        return $user
-            ? redirect()->route('bfp.respondersmanagement')
-            : redirect()->back()
-            ->withErrors(['errors' => 'Personnel Responders Adds Failed, please try again.'])
-            ->withInput();
+        return $responder
+            ? redirect()->route('bfp.responders')->with('success', 'Successfully Register Responder.')
+            : redirect()->back()->with('errors', 'Register fail, Please try again.')->withInput();
     }
 
     public function edit($id)
     {
-        $responders = PersonnelResponder::findOrFail($id);
+        $responder = User::findOrFail($id);
 
-
-
-        return view('PAGES/BFP/edit-personnel-responders', compact('responders'));
+        return view('PAGES/BFP_BDRRMC/edit-personnel-responders', compact('responder'));
     }
 
     public function updateResponders(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $responder = User::findOrFail($id);
 
         $request->validate([
             'email' => 'required|email|unique:users,email,' . $id,
@@ -143,54 +125,41 @@ class BFPPersonnelRespondersController extends Controller
             $data['photo'] = $photoPath;
         }
 
-        $updated = $user->update($data);
+        $updated = $responder->update($data);
 
-        $responder = PersonnelResponder::where('user_id', $id)->first();
+        // Log action
         Log::create([
             'interaction_type' => 'Update Responder',
-            'user_id' => auth()->id(),
             'agency_id' => auth()->user()->agency_id,
-            'personnel_responder_id' => $responder->id ?? null
+            'user_id' => $responder->id,
         ]);
 
         return $updated
-            ? redirect()->route('bfp.respondersmanagement')->with('success', 'Successfully updated personnel responder.')
-            : redirect()->back()
-            ->withErrors(['error' => 'Update failed, please try again.'])
-            ->withInput();
+            ? redirect()->route('bfp.responders')->with('success', 'Successfully Update Responder')
+            : redirect()->back()->withErrors('error', 'Update failed, please try again.')->withInput();
     }
 
     public function show($id)
     {
-        $responder = PersonnelResponder::with('user')->findOrFail($id);
+        $responder = User::findOrFail($id);
 
-        return view('PAGES/BFP/view-personnel-responders', compact('responder'));
+        return view('PAGES/BFP_BDRRMC/view-personnel-responders', compact('responder'));
     }
-
-
 
     public function destroy($id)
     {
-        $responder = PersonnelResponder::where('user_id', $id)->first();
+        $responder = User::findOrFail($id);
 
-        if ($responder) {
-            $user = $responder->user; // keep reference to the user before deleting
+        // Log action before delete
+        Log::create([
+            'interaction_type' => 'Delete Responder',
+            'creator_user_id' => auth()->id(),
+            'agency_id' => auth()->user()->agency_id,
+            'user_id' => $responder->id,
+        ]);
 
-            // Create log entry before deleting
-            Log::create([
-                'interaction_type' => 'Delete Responder',
-                'user_id' => auth()->user()->id,
-                'agency_id' => auth()->user()->agency_id,
-                'personnel_responder_id' => $responder->id, // ✅ store responder ID
-            ]);
+        $responder->delete();
 
-            // Delete responder
-            $responder->delete();
-
-            // Delete user
-            $user->delete();
-        }
-
-        return redirect()->back()->with('success', 'Successfully deleted personnel responder.');
+        return $responder ? redirect()->back()->with('success', 'Responder successfully deleted.') : redirect()->back()->with('error', 'Responder delete fail');
     }
 }
