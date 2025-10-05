@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Log extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
+        'modified_by',
         'agency_id',
         'interaction_type',
         'user_id',
@@ -39,5 +42,9 @@ class Log extends Model
     public function emergencyVehicle()
     {
         return $this->belongsTo(EmergencyVehicle::class, 'emergency_vehicle_id', 'id');
+    }
+
+    public function agency() {
+        return $this->belongsTo(Agency::class, 'agency_id', 'id');
     }
 }

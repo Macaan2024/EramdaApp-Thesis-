@@ -28,7 +28,7 @@ class Agency extends Model
         'logo'
     ];
 
-    public function users(): HasMany
+    public function user(): HasMany
     {
         return $this->hasMany(User::class, 'agency_id', 'id');
     }

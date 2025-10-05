@@ -49,6 +49,7 @@ class EmergencyVehiclesController extends Controller
         ]);
 
         Log::create([
+            'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
             'interaction_type' => 'Add',
             'agency_id' => auth()->user()->agency_id,
             'emergency_vehicle_id' => $vehicle->id, // ✅ only the ID
@@ -97,6 +98,7 @@ class EmergencyVehiclesController extends Controller
 
         // Log action
         Log::create([
+            'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
             'interaction_type' => 'Update',
             'agency_id' => auth()->user()->agency_id,
             'emergency_vehicle_id' => $vehicle->id
@@ -124,8 +126,10 @@ class EmergencyVehiclesController extends Controller
     {
         $vehicle = EmergencyVehicle::findOrFail($id);
 
+
         // Log action before delete
         Log::create([
+            'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
             'interaction_type' => 'Delete',
             'agency_id' => auth()->user()->agency_id,
             'emergency_vehicle_id' => $vehicle->id

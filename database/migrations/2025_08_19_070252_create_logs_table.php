@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('agency_id')->nullable()->constrained('agencies')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('modified_by')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('interaction_type');
             $table->foreignId('emergency_vehicle_id')->nullable()->constrained('emergency_vehicles')->onUpdate('cascade')->onDelete('cascade');

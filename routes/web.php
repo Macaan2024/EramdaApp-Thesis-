@@ -140,8 +140,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Vehicles log Controller
 
-        Route::get('logs-vehicles/{status}/{id?}', 'vehicleIndex')->name('logs-vehicles');
+        Route::get('logs-vehicles/{status}/{id?}', 'vehicleLogs')->name('logs-vehicles');
         Route::get('logs-view-vehicles/{id}', 'showVehicle')->name('logs-view-vehicles');
+        Route::get('logs-vehicles-add', 'vehiclesAdd')->name('logs-vehicles-add');
+        Route::post('logs-add-vehicles', 'addVehicles')->name('logs-add-vehicles');
+        Route::get('logs-edit-vehicles/{id}', 'edit')->name('logs-edit-vehicles');
+        Route::put('logs-update-vehicles/{id}', 'updateVehicles')->name('logs-update-vehicles');
+        Route::delete('logs-delete-vehicles/{id}', 'destroyVehicle')->name('logs-delete-vehicles');
+        Route::patch('logs-restore-vehicles/{id}', 'restoreVehicle')->name('logs-restore-vehicles');
+        Route::delete('logs-vehicle-delete/{id}', 'deleteLogVehicles')->name('logs-vehicle-delete');
+
     });
 
     Route::controller(UserController::class)->group(function () {
@@ -157,6 +165,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('search-responders', 'index')->name('search-responders');
         Route::get('filter-agency/{status}', 'index')->name('filter-agency');
         Route::get('filter-responders/{status}', 'index')->name('filter-responders');
+
     });
 });
 
