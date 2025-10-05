@@ -26,6 +26,16 @@
     @stack('toast-style')
 
     <title>{{ $title ?? 'Dashboard' }}</title>
+
+    <style>
+        /* use the font-family name exactly as Google Fonts lists it */
+        body {
+            font-family: 'Roboto', sans-serif;
+            /* or 'Poppins' */
+            font-size: 12px;
+            /* base size */
+        }
+    </style>
 </head>
 
 <body>

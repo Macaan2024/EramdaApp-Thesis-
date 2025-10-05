@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('city');
             $table->float('longitude')->nullable();
             $table->float('latitude')->nullable();
+            $table->string('logo', 2080)->nullable();
             $table->timestamps();
         });
     }

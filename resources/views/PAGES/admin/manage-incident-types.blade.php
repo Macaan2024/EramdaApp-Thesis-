@@ -3,6 +3,33 @@
     <x-partials.toast-messages />
 
     <h6 class="font-medium font-[Poppins] text-[14px] mb-3">Incident Types Management</h6>
+
+    @php
+
+    $totalDisasterIncident = 0;
+    $totalRoadAccident = 0;
+
+    foreach($incident_types as $incident_type)
+    if($incident_type->category === 'Disaster Incident') {
+    $totalDisasterIncident++;
+    }elseif ($incident_type->category === 'Road Accident') {
+    $totalRoadAccident++;
+    }
+    @endphp
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="p-5 rounded-lg shadow-md text-white bg-blue-600">
+            <h3 class="text-[14px] font-semibold font-[Poppins]">Total Disaster Incident Types</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalDisasterIncident }}</p>
+        </div>
+        <div class="p-5 rounded-lg shadow-md text-white bg-yellow-600">
+            <h3 class="text-[14px] font-semibold font-[Poppins]">Total Road Accident Types</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalRoadAccident }}</p>
+        </div>
+    </div>
+
+
     <div class="flex flex-row justify-between items-center">
         <!-- Search Form -->
         <form class="max-w-md w-full" action="{{ route('admin.search-incident-types') }}" method="GET">
@@ -55,9 +82,6 @@
                     <td class="px-6 py-4">{{ $incident_type->category }}</td>
                     <td class="px-6 py-4">
                         <div class="flex flex-row gap-1 items-center">
-                            <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="{{ route('admin.edit-incident-types', $incident_type->id) }}"><span class="material-symbols-outlined">
-                                    eyeglasses_2
-                                </span>View</a>
                             <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="{{ route('admin.edit-incident-types', $incident_type->id) }}"><span class="material-symbols-outlined">
                                     edit
                                 </span>Edit</a>

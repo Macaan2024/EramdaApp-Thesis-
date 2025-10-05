@@ -3,17 +3,17 @@
     <x-partials.toast-messages />
 
     @if ($errors->any())
-        <div class="bg-red-100 border border-red-400 text-red-700 text-[12px] font-[Poppins] px-4 py-3 rounded relative mb-4">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+    <div class="bg-red-100 border border-red-400 text-red-700 text-[12px] font-[Poppins] px-4 py-3 rounded relative mb-4">
+        <ul>
+            @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
     @endif
 
     <form class="max-w-3xl mx-auto bg-gray-100 shadow-lg rounded-2xl p-8 space-y-6"
-          action="{{ route('bfp.submit-vehicles') }}" method="POST" enctype="multipart/form-data">
+        action="{{ route('bfp.submit-vehicles') }}" method="POST" enctype="multipart/form-data">
 
         @csrf
         <input type="hidden" name="agency_id" value="{{ auth()->user()->agency_id }}">
@@ -27,22 +27,25 @@
 
         <!-- Grid fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             <!-- Vehicle Type -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Vehicle Type</label>
                 <select name="vehicleTypes"
                     class="w-full rounded-lg border @error('vehicleTypes') border-red-500 @else border-gray-300 @enderror
-                           px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
+               px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500" required>
                     <option disabled selected>Choose Vehicle Type</option>
                     <option value="Fire Truck">🚒 Fire Truck</option>
                     <option value="Ambulance">🚑 Ambulance</option>
+
+                    @if (auth()->user()->agency->agencyTypes === 'CDRRMO')
+                    <option value="Police Car">🚓 Police Car</option>
+                    @endif
                 </select>
+
                 @error('vehicleTypes')
-                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
                 @enderror
             </div>
-
             <!-- Plate Number -->
             <div class="md:col-span-2">
                 <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Plate Number</label>
@@ -51,7 +54,7 @@
                            px-3 py-2 text-[12px] font-[Poppins] focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter plate number" required>
                 @error('plateNumber')
-                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
                 @enderror
             </div>
 
@@ -62,13 +65,13 @@
                     class="w-full border @error('vehicle_photo') border-red-500 @else border-gray-300 @enderror
                            rounded-lg cursor-pointer text-[12px] font-[Poppins]">
                 @error('vehicle_photo')
-                    <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
+                <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
                 @enderror
 
                 <!-- Preview -->
-                <div class="mt-3 flex justify-center">
+                <div class="mt-3 flex justify-start">
                     <img id="vehiclePhotoPreview" src="" alt="Preview will appear here"
-                         class="hidden w-40 h-28 object-cover rounded-lg border-2 border-blue-400 shadow-md">
+                        class="hidden w-40 h-28 object-cover rounded-lg border-2 border-blue-400 shadow-md">
                 </div>
             </div>
         </div>

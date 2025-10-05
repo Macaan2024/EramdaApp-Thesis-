@@ -49,7 +49,7 @@ class EmergencyVehiclesController extends Controller
         ]);
 
         Log::create([
-            'interaction_type' => 'Add Emergency Vehicle',
+            'interaction_type' => 'Add',
             'agency_id' => auth()->user()->agency_id,
             'emergency_vehicle_id' => $vehicle->id, // ✅ only the ID
         ]);
@@ -97,7 +97,7 @@ class EmergencyVehiclesController extends Controller
 
         // Log action
         Log::create([
-            'interaction_type' => 'Update Emergency Vehicle',
+            'interaction_type' => 'Update',
             'agency_id' => auth()->user()->agency_id,
             'emergency_vehicle_id' => $vehicle->id
 
@@ -126,7 +126,7 @@ class EmergencyVehiclesController extends Controller
 
         // Log action before delete
         Log::create([
-            'interaction_type' => 'Delete Emergency Vehicle',
+            'interaction_type' => 'Delete',
             'agency_id' => auth()->user()->agency_id,
             'emergency_vehicle_id' => $vehicle->id
 

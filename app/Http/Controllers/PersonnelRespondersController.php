@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use App\Models\Log;
+use App\Models\PersonnelResponder;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,25 +12,55 @@ use Illuminate\Support\Facades\Hash;
 
 class PersonnelRespondersController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $responders = User::where('user_type', 'responders')
-            ->where('agency_id', auth()->user()->agency_id)
-            ->when($request->search, function ($query) use ($request) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('firstname', 'like', '%' . $request->search . '%')
-                        ->orWhere('lastname', 'like', '%' . $request->search . '%')
-                        ->orWhere('email', 'like', '%' . $request->search . '%')
-                        ->orWhere('position', 'like', '%' . $request->search . '%')
-                        ->orWhere('contact_number', 'like', '%' . $request->search . '%');
-                });
-            })
-            ->paginate(10);
 
-        return view('PAGES/BFP_BDRRMC/manage-personnel-responders', compact('responders'));
+    public function index(Request $request, $status = 'All')
+    {
+
+        $total = 0;
+        $sessionUser = auth()->user()->user_type;
+        if ($sessionUser !== 'admin') {
+            $responders = User::where('user_type', 'responders')
+                ->where('agency_id', auth()->user()->agency_id)
+                ->when($request->search, function ($query) use ($request) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('firstname', 'like', '%' . $request->search . '%')
+                            ->orWhere('lastname', 'like', '%' . $request->search . '%')
+                            ->orWhere('email', 'like', '%' . $request->search . '%')
+                            ->orWhere('position', 'like', '%' . $request->search . '%')
+                            ->orWhere('contact_number', 'like', '%' . $request->search . '%');
+                    });
+                })
+                ->paginate(10);
+            return view('PAGES/BFP_BDRRMC/manage-personnel-responders', compact('responders'));
+        } else {
+            $agencies = Agency::all();
+
+            $responders = User::withTrashed()
+                ->whereNot('user_type', 'admin')
+                ->when($request->agency, function ($query) use ($request) {
+                    $query->where('agency_id', $request->agency);
+                })
+                ->when($status === 'Archived', function ($query) {
+                    $query->onlyTrashed();
+                    $total = $query->count();
+                })
+                ->when(in_array($status, ['Pending', 'Approved', 'Declined']), function ($query) use ($status) {
+                    $query->where('account_status', ucfirst($status));
+                    $total = $query->count();
+                })
+                ->when($request->search, function ($query) use ($request) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('firstname', 'like', '%' . $request->search . '%')
+                            ->orWhere('lastname', 'like', '%' . $request->search . '%')
+                            ->orWhere('email', 'like', '%' . $request->search . '%')
+                            ->orWhere('position', 'like', '%' . $request->search . '%')
+                            ->orWhere('contact_number', 'like', '%' . $request->search . '%');
+                    });
+                })
+                ->paginate(10);
+
+            return view('PAGES/admin/personnel-responders', compact('responders', 'agencies', 'status'));
+        }
     }
 
 
@@ -92,13 +124,19 @@ class PersonnelRespondersController extends Controller
 
     public function edit($id)
     {
+        $sessionUser = auth()->user()->user_type;
         $responder = User::findOrFail($id);
 
-        return view('PAGES/BFP_BDRRMC/edit-personnel-responders', compact('responder'));
+        if ($sessionUser !== 'admin') {
+            return view('PAGES/BFP_BDRRMC/edit-personnel-responders', compact('responder'));
+        } else {
+            return view('PAGES/admin/edit-personnel-responders', compact('responder'));
+        }
     }
 
     public function updateResponders(Request $request, $id)
     {
+        $sessionUser = auth()->user()->user_type;
         $responder = User::findOrFail($id);
 
         $request->validate([
@@ -134,9 +172,15 @@ class PersonnelRespondersController extends Controller
             'user_id' => $responder->id,
         ]);
 
-        return $updated
-            ? redirect()->route('bfp.responders')->with('success', 'Successfully Update Responder')
-            : redirect()->back()->withErrors('error', 'Update failed, please try again.')->withInput();
+        if ($updated) {
+            if ($sessionUser !== 'admin') {
+               return redirect()->route('bfp.responders')->with('success', 'Successfully Update Responder');
+            }else {
+               return redirect()->route('admin.responders', 'All')->with('success', 'Successfully Update Responder');
+            }
+        } else {
+           return redirect()->back()->withErrors('error', 'Update failed, please try again.')->withInput();
+        }
     }
 
     public function show($id)
@@ -150,6 +194,11 @@ class PersonnelRespondersController extends Controller
     {
         $responder = User::findOrFail($id);
 
+        $responder->update([
+            'account_status' => 'Deleted',
+            'availability_status' => 'Unavailable'
+        ]);
+
         // Log action before delete
         Log::create([
             'interaction_type' => 'Delete Responder',
@@ -161,5 +210,46 @@ class PersonnelRespondersController extends Controller
         $responder->delete();
 
         return $responder ? redirect()->back()->with('success', 'Responder successfully deleted.') : redirect()->back()->with('error', 'Responder delete fail');
+    }
+
+
+    public function restore($id)
+    {
+        $responder = User::withTrashed()->findOrFail($id);
+        $responder->restore();
+
+        $responder->update([
+            'account_status' => 'Pending',
+        ]);
+
+        return redirect()->back()->with('success', 'Responder restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $responder = User::withTrashed()->findOrFail($id);
+        $responder->forceDelete();
+
+        return redirect()->back()->with('success', 'Responder permanently deleted.');
+    }
+
+
+    public function accept($id)
+    {
+        $responder = User::findOrFail($id);
+        $responder->update([
+            'account_status' => 'Approved',
+            'availability_status' => 'Available'
+        ]);
+
+        return redirect()->back()->with('success', 'Responder accepted successfully.');
+    }
+
+    public function decline($id)
+    {
+        $responder = User::findOrFail($id);
+        $responder->update(['account_status' => 'Declined']);
+
+        return redirect()->back()->with('success', 'Responder declined successfully.');
     }
 }

@@ -24,28 +24,31 @@ class BarangayController extends Controller
     public function addBarangay(Request $request)
     {
         $request->validate([
-            'barangayNames' => 'required|string|max:255',
+            'barangayNames' => 'required|string|max:255|unique:barangays,barangayNames',
             'city' => 'required|string|max:255',
             'longitude' => 'required|numeric',
             'latitude' => 'required|numeric',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            // store in storage/app/public/logos
+            $logoPath = $request->file('logo')->store('logos', 'public');
+        }
 
         $barangay = Barangay::create([
             'barangayNames' => $request->barangayNames,
             'city' => $request->city,
             'longitude' => $request->longitude,
             'latitude' => $request->latitude,
+            'logo' => $logoPath
         ]);
 
-        if ($barangay) {
-            return redirect()->route('admin.barangay')
-                ->with('success', 'Successfully Registered Barangay with Coordinates');
-        }
-
-        return redirect()->back()->with('error', 'Failed to Register Barangay');
+        return $barangay
+            ? redirect()->route('admin.barangay')->with('success', 'Successfully Registered Barangay with Coordinates')
+            : redirect()->back()->with('error', 'Failed to Register Barangay');
     }
-
-
 
     public function edit($id)
     {
@@ -58,34 +61,40 @@ class BarangayController extends Controller
 
     public function updateBarangay(Request $request, $id)
     {
-
-        $barangays = Barangay::findorFail($id);
+        $barangay = Barangay::findOrFail($id);
 
         $request->validate([
-            'barangayNames' => 'required|string|max:255',
-            'city' =>  'required|string|max:255',
+            'barangayNames' => 'required|string|max:255|unique:barangays,barangayNames,' . $barangay->id,
+            'city' => 'required|string|max:255',
+            'longitude' => 'nullable|numeric',
+            'latitude' => 'nullable|numeric',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
-        $barangays->update([
-            'barangayNames' => $request->barangayNames,
-            'city' => $request->municipals,
-            'longitude' => $request->longitude,
-            'latitude' => $request->latitude
-        ]);
+        $data = $request->only(['barangayNames', 'city', 'longitude', 'latitude']);
 
-
-        if ($barangays) {
-            return redirect()->route('admin.barangay')->with('success', 'Successfully Edit Barangay');
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo')->store('logos', 'public');
         }
+
+        $barangay->update($data);
+
+        return redirect()->route('admin.barangay')->with('success', 'Successfully Edited Barangay');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $barangays = Barangay::findOrFail($id)->delete();
 
         return redirect()->back()->with('success', 'Successfully Delete Barangay');
+    }
+
+    public function show($id)
+    {
+
+        $barangay = Barangay::findOrFail($id);
+
+
+        return view('PAGES/admin/view-barangay', compact('barangay'));
     }
 }

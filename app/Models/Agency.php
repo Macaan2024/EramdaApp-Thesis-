@@ -24,7 +24,8 @@ class Agency extends Model
         'longitude',
         'latitude',
         'zipcode',
-        'activeStatus'
+        'activeStatus',
+        'logo'
     ];
 
     public function users(): HasMany

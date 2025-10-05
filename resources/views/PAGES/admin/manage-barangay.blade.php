@@ -1,6 +1,24 @@
 <x-layout.layout>
     <x-partials.toast-messages />
-    <h6 class="font-medium font-[Poppins] text-[14px] mb-3">Barangay Management</h6>
+    <h6 class="font-medium font-[Poppins] text-[16px] mb-3">Barangay Management</h6>
+
+    @php 
+
+    $totalBarangay = 0;
+
+    foreach($barangays as $barangay)
+        $totalBarangay++;
+    @endphp
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="p-5 rounded-lg shadow-md text-white bg-blue-600">
+            <h3 class="text-[16px] font-semibold font-[Poppins]">Total Barangay</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalBarangay }}</p>
+        </div>
+
+    </div>
+
     <div class="flex flex-row justify-between items-center">
         <!-- Search Form -->
         <form class="max-w-md w-full" action="{{ route('admin.search-barangay') }}" method="GET">
@@ -36,6 +54,10 @@
             <thead class="text-xs text-gray-700 uppercase bg-blue-100 dark:bg-gray-700 dark:text-gray-400 font-[Poppins] text-[12px]">
                 <tr>
                     <th scope="col" class="px-6 py-3">
+                        No
+                    </th>
+                    <th>Image</th>
+                    <th scope="col" class="px-6 py-3">
                         Names
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -55,13 +77,23 @@
             <tbody>
                 @forelse ($barangays as $barangay)
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-[12px] font-[Roboto] text-black">
+                    <td class="px-6 py-4">{{ $loop->iteration }}</td>
+                    <td class="px-6 py-4">
+                        @if($barangay->logo)
+                        <img src="{{ asset('storage/' . $barangay->logo) }}"
+                            alt="Barangay Image"
+                            class="w-12 h-12 object-cover rounded-md shadow-sm">
+                        @else
+                        <span class="text-gray-400 italic">No image</span>
+                        @endif
+                    </td>
                     <td class="px-6 py-4">{{ $barangay->barangayNames }}</td>
                     <td class="px-6 py-4">{{ $barangay->city }}</td>
                     <td class="px-6 py-4">{{ $barangay->longitude }}</td>
                     <td class="px-6 py-4">{{ $barangay->latitude }}</td>
                     <td class="px-6 py-4">
                         <div class="flex flex-row gap-1 items-center">
-                            <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="{{ route('admin.edit-barangay', $barangay->id) }}"><span class="material-symbols-outlined">
+                            <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="{{ route('admin.view-barangay', $barangay->id) }}"><span class="material-symbols-outlined">
                                     eyeglasses_2
                                 </span>View</a>
                             <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="{{ route('admin.edit-barangay', $barangay->id) }}"><span class="material-symbols-outlined">

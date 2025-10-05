@@ -2,6 +2,48 @@
 
     <x-partials.toast-messages />
     <h6 class="font-medium font-[Poppins] text-[14px] mb-3">Agencies Management</h6>
+
+    @php
+
+    $totalHospital = 0;
+    $totalBFP = 0;
+    $totalBDRRMC = 0;
+    $totalCDRRMO = 0;
+
+    foreach($agencies as $agency) {
+        if ($agency->agencyTypes === 'CDRRMO') {
+            $totalCDRRMO++;
+        }elseif ($agency->agencyTypes === 'BFP') {
+            $totalBFP++;
+        }elseif ($agency->agencyTypes === 'BDRRMC') {
+            $totalBDRRMC++;
+        }elseif ($agency->agencyTypes === 'HOSPITALS') {
+            $totalHospital++;
+        }
+    }
+    @endphp
+
+    
+    <!-- Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="p-5 rounded-lg shadow-md text-white bg-blue-600">
+            <h3 class="text-[14px] font-semibold font-[Poppins]">Total CDRRMO Building</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalCDRRMO }}</p>
+        </div>
+        <div class="p-5 rounded-lg shadow-md text-white bg-red-600">
+            <h3 class="text-[14px] font-semibold font-[Poppins]">Total BFP Stations</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalBFP }}</p>
+        </div>
+         <div class="p-5 rounded-lg shadow-md text-white bg-gray-600">
+            <h3 class="text-[14px] font-semibold font-[Poppins]">Total BDRRMC Barangay</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalBDRRMC }}</p>
+        </div>
+         <div class="p-5 rounded-lg shadow-md text-white bg-green-600">
+            <h3 class="text-[14px] font-semibold font-[Poppins]">Total Hospitals</h3>
+            <p class="text-2xl font-bold mt-2">{{ $totalHospital }}</p>
+        </div>
+    </div>
+
     <div class="flex flex-row justify-between items-center">
         <!-- Search Form -->
         <form class="max-w-md w-full" action="{{ route('admin.search-agency') }}" method="GET">
@@ -37,6 +79,9 @@
             <thead class="text-xs text-gray-700 uppercase bg-blue-100 dark:bg-gray-700 dark:text-gray-400 font-[Poppins] text-[12px]">
                 <tr>
                     <th scope="col" class="px-6 py-3">
+                        Logo
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Names
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -56,6 +101,16 @@
             <tbody>
                 @forelse ($agencies as $agency)
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-[12px] font-[Roboto] text-black">
+                    <td class="px-6 py-4">
+                        @if ($agency->logo)
+                        <img
+                            src="{{ asset('storage/' . $agency->logo) }}"
+                            alt="Logo"
+                            class="h-12 w-12 object-cover rounded-full shadow" />
+                        @else
+                        <span class="text-gray-500 text-sm">No Logo</span>
+                        @endif
+                    </td>
                     <td class="px-6 py-4">{{ $agency->agencyNames }}</td>
                     <td class="px-6 py-4">{{ $agency->agencyTypes }}</td>
                     <td class="px-6 py-4">{{ $agency->email }}</td>
@@ -67,10 +122,7 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex flex-row gap-1 items-center">
-                            <a type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-[Poppins] rounded-lg text-[12px] px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex flex-row justify-center items-center gap-2" href="#"><span class="material-symbols-outlined">
-                                    eyeglasses_2
-                                </span>View</a>
-                            <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="#"><span class="material-symbols-outlined">
+                            <a type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-lg  px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 flex items-center justify-center" href="{{ route('admin.edit-agency', $agency->id) }}"><span class="material-symbols-outlined">
                                     edit
                                 </span>Edit</a>
                             <form action="#" method="POST">

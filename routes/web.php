@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\EmergencyVehiclesController;
 use App\Http\Controllers\IncidentReportsController;
 use App\Http\Controllers\IncidentTypesController;
+use App\Http\Controllers\LogsController;
 use App\Http\Controllers\PersonnelRespondersController;
 use App\Http\Controllers\UserController;
 use App\Models\Barangay;
@@ -95,26 +96,6 @@ Route::prefix('bfp')->name('bfp.')->group(function () {
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
-
-    Route::controller(UserController::class)->group(function () {
-        Route::get('user', 'index')->name('user');
-        Route::get('add-user', 'add')->name('add-user');
-        Route::post('submit-user', 'addUser')->name('submit-user');
-        Route::get('search-user', 'index')->name('search-user');
-        Route::get('search-approved-user', 'approvedUsers')->name('search-approved-user');
-        Route::get('search-declined-user', 'declineUsers')->name('search-declined-user');
-        Route::get('search-pending-user', 'pendingUsers')->name('search-pending-user');
-        Route::delete('delete-user/{id}', 'destroy')->name('delete-user');
-        Route::get('edit-user/{id}', 'edit')->name('edit-user');
-        Route::put('update-user/{id}', 'updateUser')->name('update-user');
-        Route::get('view-user/{id}', 'show')->name('view-user');
-        Route::put('/users/{id}/approve', [UserController::class, 'approve'])->name('user-approve');
-        Route::put('/users/{id}/decline', [UserController::class, 'decline'])->name('user-decline');
-        Route::get('approved-users', 'approvedUsers')->name('approved-users');
-        Route::get('declined-users', 'declinedUsers')->name('declined-users');
-        Route::get('pending-users', 'pendingUsers')->name('pending-users');
-    });
-
     Route::controller(BarangayController::class)->group(function () {
         Route::get('barangay', 'index')->name('barangay');
         Route::view('add-barangay', 'PAGES/admin/add-barangay')->name('add-barangay');
@@ -123,6 +104,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('delete-barangay/{id}', 'destroy')->name('delete-barangay');
         Route::get('edit-barangay/{id}', 'edit')->name('edit-barangay');
         Route::put('update-barangay/{id}', 'updateBarangay')->name('update-barangay');
+        Route::get('view-barangay/{id}', 'show')->name('view-barangay');
     });
 
     // 🔹 Admin Incident Types Management
@@ -145,6 +127,36 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('delete-agency/{id}', 'destroy')->name('delete-agency');
         Route::get('edit-agency/{id}', 'edit')->name('edit-agency');
         Route::put('update-agency/{id}', 'updateAgencies')->name('update-agency');
+    });
+
+    Route::controller(LogsController::class)->group(function () {
+        Route::get('logs', 'index')->name('logs');
+
+        // Responder log Controller
+        Route::get('logs-responder/{status}/{agency?}', 'responderIndex')->name('logs-responder');
+        Route::get('logs-filter-agency/{status}', 'responderIndex')->name('logs-filter-agency');
+        Route::get('logs-search-responders', 'responderIndex')->name('logs-search-responders');
+        Route::get('logs-track/{user}/{id}', 'trackResponder')->name('logs-track');
+
+        // Vehicles log Controller
+
+        Route::get('logs-vehicles/{status}/{id?}', 'vehicleIndex')->name('logs-vehicles');
+        Route::get('logs-view-vehicles/{id}', 'showVehicle')->name('logs-view-vehicles');
+    });
+
+    Route::controller(UserController::class)->group(function () {
+        Route::get('responders/{status}', 'index')->name('responders');
+        Route::get('add-responders', 'register')->name('add-responders');
+        ROute::get('view-responder/{id}', 'show')->name('view-responder');
+        Route::get('edit-responders/{id}', 'edit')->name('edit-responders');
+        Route::put('update-responders/{id}', 'updateResponders')->name('update-responders');
+        Route::patch('responders/{id}/restore', 'restore')->name('restore-responders');
+        Route::delete('responders/{id}/force-delete', 'forceDelete')->name('force-delete-responders');
+        Route::patch('responders/{id}/accept', 'accept')->name('accept-responders');
+        Route::patch('responders/{id}/decline', 'decline')->name('decline-responders');
+        Route::get('search-responders', 'index')->name('search-responders');
+        Route::get('filter-agency/{status}', 'index')->name('filter-agency');
+        Route::get('filter-responders/{status}', 'index')->name('filter-responders');
     });
 });
 

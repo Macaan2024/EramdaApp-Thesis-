@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('agencyNames')->unique();
             $table->string('agencyTypes');
-            $table->string('region');
-            $table->string('province');
+            $table->string('region')->nullable();
+            $table->string('province')->nullable();
             $table->string('city');
             $table->string('barangay');
             $table->string('address');
@@ -25,6 +25,7 @@ return new class extends Migration
             $table->float('longitude')->nullable();
             $table->float('latitude')->nullable();
             $table->string('activeStatus');
+            $table->string('logo', 2080)->nullable();
             $table->timestamps();
         });
     }
