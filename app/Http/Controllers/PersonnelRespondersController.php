@@ -110,16 +110,19 @@ class PersonnelRespondersController extends Controller
             'availability_status' => $request->availability_status,
         ]);
 
-        // Log action
-        Log::create([
-            'interaction_type' => 'Add Responder',
-            'agency_id' => auth()->user()->agency_id,
-            'user_id' => $responder->id,
-        ]);
+        if ($responder) {
 
-        return $responder
-            ? redirect()->route('bfp.responders')->with('success', 'Successfully Register Responder.')
-            : redirect()->back()->with('errors', 'Register fail, Please try again.')->withInput();
+            Log::create([
+                'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+                'interaction_type' => 'Add',
+                'agency_id' => auth()->user()->agency_id,
+                'user_id' => $responder->id, // ✅ only the ID
+            ]);
+
+            return redirect()->route('bfp.responders')->with('success', 'Successfully Register Responder.');
+        } else {
+            return redirect()->back()->with('errors', 'Register fail, Please try again.')->withInput();
+        }
     }
 
     public function edit($id)
@@ -167,19 +170,21 @@ class PersonnelRespondersController extends Controller
 
         // Log action
         Log::create([
-            'interaction_type' => 'Update Responder',
+            'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+            'interaction_type' => 'Update',
+            'creator_user_id' => auth()->id(),
             'agency_id' => auth()->user()->agency_id,
             'user_id' => $responder->id,
         ]);
 
         if ($updated) {
             if ($sessionUser !== 'admin') {
-               return redirect()->route('bfp.responders')->with('success', 'Successfully Update Responder');
-            }else {
-               return redirect()->route('admin.responders', 'All')->with('success', 'Successfully Update Responder');
+                return redirect()->route('bfp.responders')->with('success', 'Successfully Update Responder');
+            } else {
+                return redirect()->route('admin.responders', 'All')->with('success', 'Successfully Update Responder');
             }
         } else {
-           return redirect()->back()->withErrors('error', 'Update failed, please try again.')->withInput();
+            return redirect()->back()->withErrors('error', 'Update failed, please try again.')->withInput();
         }
     }
 
@@ -201,7 +206,8 @@ class PersonnelRespondersController extends Controller
 
         // Log action before delete
         Log::create([
-            'interaction_type' => 'Delete Responder',
+            'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+            'interaction_type' => 'Delete',
             'creator_user_id' => auth()->id(),
             'agency_id' => auth()->user()->agency_id,
             'user_id' => $responder->id,
@@ -210,46 +216,5 @@ class PersonnelRespondersController extends Controller
         $responder->delete();
 
         return $responder ? redirect()->back()->with('success', 'Responder successfully deleted.') : redirect()->back()->with('error', 'Responder delete fail');
-    }
-
-
-    public function restore($id)
-    {
-        $responder = User::withTrashed()->findOrFail($id);
-        $responder->restore();
-
-        $responder->update([
-            'account_status' => 'Pending',
-        ]);
-
-        return redirect()->back()->with('success', 'Responder restored successfully.');
-    }
-
-    public function forceDelete($id)
-    {
-        $responder = User::withTrashed()->findOrFail($id);
-        $responder->forceDelete();
-
-        return redirect()->back()->with('success', 'Responder permanently deleted.');
-    }
-
-
-    public function accept($id)
-    {
-        $responder = User::findOrFail($id);
-        $responder->update([
-            'account_status' => 'Approved',
-            'availability_status' => 'Available'
-        ]);
-
-        return redirect()->back()->with('success', 'Responder accepted successfully.');
-    }
-
-    public function decline($id)
-    {
-        $responder = User::findOrFail($id);
-        $responder->update(['account_status' => 'Declined']);
-
-        return redirect()->back()->with('success', 'Responder declined successfully.');
     }
 }

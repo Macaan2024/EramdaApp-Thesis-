@@ -46,7 +46,12 @@ class User extends Authenticatable
 
     public function personnelResponder()
     {
-        return $this->hasMany(PersonnelResponder::class, 'user_id');
+        return $this->hasMany(PersonnelResponder::class, 'user_id', 'id');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(Log::class, 'user_id', 'id');
     }
 
     /**
