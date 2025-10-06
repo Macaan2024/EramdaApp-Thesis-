@@ -25,4 +25,8 @@ class EmergencyVehicle extends Model
     {
         return $this->hasMany(Log::class);
     }
+
+    public function agency() {
+        return $this->belongsTo(Agency::class, 'agency_id', 'id');
+    }
 }

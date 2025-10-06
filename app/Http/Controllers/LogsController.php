@@ -17,7 +17,28 @@ class LogsController extends Controller
     {
         $agencies = Agency::all();
         $search = $request->input('search');
+        $trackVehicleId = $request->get('track_vehicle_id'); // Detect tracking request
 
+        // =========================
+        // VEHICLES PAGINATION LOGIC
+        // =========================
+        $perPage = 10;
+        $vehiclesQuery = EmergencyVehicle::orderBy('id');
+
+        $page = 1; // default page
+        if ($trackVehicleId) {
+            $allVehicles = $vehiclesQuery->get();
+            $position = $allVehicles->search(fn($v) => $v->id == $trackVehicleId);
+            if ($position !== false) {
+                $page = floor($position / $perPage) + 1;
+            }
+        }
+
+        $vehicles = $vehiclesQuery->paginate($perPage, ['*'], 'vehicles_page', $page);
+
+        // =========================
+        // LOGS QUERY LOGIC (unchanged)
+        // =========================
         if (empty($id)) {
 
             if ($status === 'All') {
@@ -100,14 +121,30 @@ class LogsController extends Controller
                         });
                 }
             } else {
-                return redirect()->back()->with('errors', 'Agency cant be found');
+                return redirect()->back()->with('errors', 'Agency can’t be found');
             }
         }
 
-        $logs = $logsQuery->orderBy('created_at', 'desc')->paginate(10);
+        // =========================
+        // LOGS PAGINATION
+        // =========================
+        $logs = $logsQuery->orderBy('created_at', 'desc')->paginate(10, ['*'], 'logs_page');
 
-        return view('PAGES.admin.logs-vehicle', compact('status', 'agencies', 'logs', 'id', 'search'));
+        // =========================
+        // VIEW RETURN
+        // =========================
+        return view('PAGES.admin.logs-vehicle', compact(
+            'status',
+            'agencies',
+            'logs',
+            'id',
+            'search',
+            'vehicles'
+        ));
     }
+
+
+
 
     public function showVehicle($id)
     {
@@ -370,10 +407,13 @@ class LogsController extends Controller
 
 
 
-    public function index()
+    public function index($status, $id = null)
     {
         $vehicles = EmergencyVehicle::withTrashed()->paginate(10);
-        $users = User::withTrashed()->paginate(10);
-        return view('PAGES.admin.manage-logs', compact('vehicles', 'users'));
+
+        $users = User::withTrashed()
+
+            ->paginate(10);
+        return view('PAGES.admin.manage-logs', compact('vehicles', 'users', 'status'));
     }
 }

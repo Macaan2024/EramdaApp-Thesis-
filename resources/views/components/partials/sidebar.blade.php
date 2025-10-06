@@ -65,7 +65,7 @@
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Manage Agency
                 </a>
-                <a href="{{ route('admin.logs') }}"
+                <a href="{{ route('admin.logs', 'All') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Manage Logs

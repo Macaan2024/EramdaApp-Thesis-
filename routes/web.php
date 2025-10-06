@@ -130,7 +130,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::controller(LogsController::class)->group(function () {
-        Route::get('logs', 'index')->name('logs');
+        //manage logs
+        Route::get('logs/{status}', 'index')->name('logs');
+        Route::get('logs/user/{status}', 'index')->name('logs.user');
+
 
         // Responder log Controller
         Route::get('logs-responder/{status}/{agency?}', 'responderIndex')->name('logs-responder');
@@ -149,7 +152,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('logs-delete-vehicles/{id}', 'destroyVehicle')->name('logs-delete-vehicles');
         Route::patch('logs-restore-vehicles/{id}', 'restoreVehicle')->name('logs-restore-vehicles');
         Route::delete('logs-vehicle-delete/{id}', 'deleteLogVehicles')->name('logs-vehicle-delete');
-
     });
 
     Route::controller(UserController::class)->group(function () {
@@ -165,7 +167,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('search-responders', 'index')->name('search-responders');
         Route::get('filter-agency/{status}', 'index')->name('filter-agency');
         Route::get('filter-responders/{status}', 'index')->name('filter-responders');
-
     });
 });
 
