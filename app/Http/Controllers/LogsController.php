@@ -23,9 +23,20 @@ class LogsController extends Controller
         // VEHICLES PAGINATION LOGIC
         // =========================
         $perPage = 10;
-        $vehiclesQuery = EmergencyVehicle::orderBy('id');
+        $vehiclesQuery = EmergencyVehicle::withTrashed()
+            ->orderBy('id')
+            ->when($search, function ($query, $search) {
+                $query->where('plateNumber', 'like', "%{$search}%")
+                    ->orWhere('vehicleTypes', 'like', "%{$search}%");
+            })
+            ->when($id, function ($query, $id) {
+                $query->where('agency_id', $id);
+            });
 
-        $page = 1; // default page
+        // ✅ Use the current page from request (fixes pagination UI)
+        $page = $request->input('vehicles_page', 1);
+
+        // If tracking a specific vehicle, find which page it's on
         if ($trackVehicleId) {
             $allVehicles = $vehiclesQuery->get();
             $position = $allVehicles->search(fn($v) => $v->id == $trackVehicleId);
@@ -34,94 +45,102 @@ class LogsController extends Controller
             }
         }
 
+        // Paginate with proper page detection
         $vehicles = $vehiclesQuery->paginate($perPage, ['*'], 'vehicles_page', $page);
 
         // =========================
-        // LOGS QUERY LOGIC (unchanged)
+        // LOGS QUERY LOGIC
         // =========================
         if (empty($id)) {
-
             if ($status === 'All') {
-                $logsQuery = Log::with(['emergencyVehicle' => function ($query) {
-                    $query->withTrashed();
-                }])
+                $logsQuery = Log::with(['emergencyVehicle' => fn($q) => $q->withTrashed()])
                     ->whereNotNull('emergency_vehicle_id')
-                    ->when($search, function ($query, $search) {
-                        $query->whereHas('emergencyVehicle', function ($q) use ($search) {
-                            $q->withTrashed()
-                                ->where('plateNumber', 'like', "%{$search}%");
-                        });
-                    });
+                    ->when(
+                        $search,
+                        fn($query, $search) =>
+                        $query->whereHas(
+                            'emergencyVehicle',
+                            fn($q) =>
+                            $q->withTrashed()->where('plateNumber', 'like', "%{$search}%")
+                        )
+                    );
             } elseif ($status === 'Delete') {
-                $logsQuery = Log::with(['emergencyVehicle' => function ($query) {
-                    $query->onlyTrashed();
-                }])
+                $logsQuery = Log::with(['emergencyVehicle' => fn($q) => $q->withTrashed()])
                     ->whereNotNull('emergency_vehicle_id')
                     ->where('interaction_type', 'Delete')
-                    ->when($search, function ($query, $search) {
-                        $query->whereHas('emergencyVehicle', function ($q) use ($search) {
-                            $q->onlyTrashed()
-                                ->where('plateNumber', 'like', "%{$search}%");
-                        });
-                    });
-            } elseif ($status === 'Restore') {
-                $logsQuery = Log::onlyTrashed();
+                    ->when(
+                        $search,
+                        fn($query, $search) =>
+                        $query->whereHas(
+                            'emergencyVehicle',
+                            fn($q) =>
+                            $q->onlyTrashed()->where('plateNumber', 'like', "%{$search}%")
+                        )
+                    );
             } else {
-                $logsQuery = Log::with(['emergencyVehicle' => function ($query) {
-                    $query->withTrashed();
-                }])
+                $logsQuery = Log::with(['emergencyVehicle' => fn($q) => $q->withTrashed()])
                     ->whereNotNull('emergency_vehicle_id')
                     ->where('interaction_type', $status);
             }
         } else {
-
             // Check if the agency exists
             $checkAgency = Agency::findOrFail($id);
 
-            if ($checkAgency) {
-                if ($status === 'All') {
-                    $logsQuery = Log::with(['emergencyVehicle' => function ($query) use ($id) {
-                        $query->withTrashed();
-                    }])
-                        ->where('agency_id', $id)
-                        ->whereNotNull('emergency_vehicle_id')
-                        ->when($search, function ($query, $search) {
-                            $query->whereHas('emergencyVehicle', function ($q) use ($search) {
-                                $q->withTrashed()
-                                    ->where('plateNumber', 'like', "%{$search}%");
-                            });
-                        });
-                } elseif ($status === 'Delete') {
-                    $logsQuery = Log::with(['emergencyVehicle' => function ($query) use ($id) {
-                        $query->onlyTrashed();
-                    }])
-                        ->whereNotNull('emergency_vehicle_id')
-                        ->where('interaction_type', 'Delete')
-                        ->where('agency_id', $id)
-                        ->when($search, function ($query, $search) {
-                            $query->whereHas('emergencyVehicle', function ($q) use ($search) {
-                                $q->onlyTrashed()
-                                    ->where('plateNumber', 'like', "%{$search}%");
-                            });
-                        });
-                } elseif ($status === 'Restore') {
-                    $logsQuery = Log::onlyTrashed()->where('agency_id', $id);
-                } else {
-                    $logsQuery = Log::with(['emergencyVehicle' => function ($query) use ($id) {
-                        $query->withTrashed()->where('agency_id', $id);
-                    }])
-                        ->whereNotNull('emergency_vehicle_id')
-                        ->where('interaction_type', $status)
-                        ->where('agency_id', $id)
-                        ->when($search, function ($query, $search) {
-                            $query->whereHas('emergencyVehicle', function ($q) use ($search) {
-                                $q->withTrashed()
-                                    ->where('plateNumber', 'like', "%{$search}%");
-                            });
-                        });
-                }
+            if ($status === 'All') {
+                $logsQuery = Log::with(['emergencyVehicle' => fn($q) => $q->withTrashed()])
+                    ->where('agency_id', $id)
+                    ->whereNotNull('emergency_vehicle_id')
+                    ->when(
+                        $search,
+                        fn($query, $search) =>
+                        $query->whereHas(
+                            'emergencyVehicle',
+                            fn($q) =>
+                            $q->withTrashed()->where('plateNumber', 'like', "%{$search}%")
+                        )
+                    );
+            } elseif ($status === 'Delete') {
+                $logsQuery = Log::with(['emergencyVehicle' => fn($q) => $q->withTrashed()])
+                    ->where('agency_id', $id)
+                    ->whereNotNull('emergency_vehicle_id')
+                    ->where('interaction_type', 'Delete')
+                    ->when(
+                        $search,
+                        fn($query, $search) =>
+                        $query->whereHas(
+                            'emergencyVehicle',
+                            fn($q) =>
+                            $q->onlyTrashed()->where('plateNumber', 'like', "%{$search}%")
+                        )
+                    );
+            } elseif ($status === 'Restored') {
+                $logsQuery = Log::with(['emergencyVehicle']) // no withTrashed()
+                    ->where('agency_id', $id)
+                    ->whereNotNull('emergency_vehicle_id')
+                    ->where('interaction_type', 'Restored')
+                    ->when(
+                        $search,
+                        fn($query, $search) =>
+                        $query->whereHas(
+                            'emergencyVehicle',
+                            fn($q) =>
+                            $q->where('plateNumber', 'like', "%{$search}%")
+                        )
+                    );
             } else {
-                return redirect()->back()->with('errors', 'Agency can’t be found');
+                $logsQuery = Log::with(['emergencyVehicle' => fn($q) => $q->withTrashed()])
+                    ->where('agency_id', $id)
+                    ->whereNotNull('emergency_vehicle_id')
+                    ->where('interaction_type', $status)
+                    ->when(
+                        $search,
+                        fn($query, $search) =>
+                        $query->whereHas(
+                            'emergencyVehicle',
+                            fn($q) =>
+                            $q->withTrashed()->where('plateNumber', 'like', "%{$search}%")
+                        )
+                    );
             }
         }
 
@@ -133,29 +152,47 @@ class LogsController extends Controller
         // =========================
         // VIEW RETURN
         // =========================
+
+
+        $policeCarCount = EmergencyVehicle::where('vehicleTypes', 'Police Car')->count();
+        $fireTruckCount = EmergencyVehicle::where('vehicleTypes', 'Fire Truck')->count();
+        $ambulanceCount = EmergencyVehicle::where('vehicleTypes', 'Ambulance')->count();
+
+        $restoredCount = Log::where('interaction_type', 'Restore')->count();
+        $deletedCount = Log::where('interaction_type', 'Delete')->count();
+        $editedCount = Log::where('interaction_type', 'Edit')->count();
+        $addedCount = Log::where('interaction_type', 'Add')->count();
         return view('PAGES.admin.logs-vehicle', compact(
             'status',
             'agencies',
             'logs',
             'id',
             'search',
-            'vehicles'
+            'vehicles',
+            'policeCarCount',
+            'fireTruckCount',
+            'ambulanceCount',
+            'restoredCount',
+            'deletedCount',
+            'editedCount',
+            'addedCount'
         ));
     }
 
 
 
 
+
     public function showVehicle($id)
     {
-        $log = Log::with('emergencyVehicle')->findOrFail($id);
+        $vehicle = EmergencyVehicle::findOrFail($id);
 
-        if ($log->emergencyVehicle) {
-            return view('PAGES.admin.logs-view-vehicle', compact('log'));
-        } else {
-            return redirect()->back()->with('error', 'No emergency vehicle found for this log.');
+        if ($vehicle) {
+            return view('PAGES/admin/logs-view-vehicle', compact('vehicle'));
         }
+        return redirect()->back()->with('error', 'No emergency vehicle found for this log.');
     }
+
 
     public function vehiclesAdd()
     {
@@ -196,7 +233,7 @@ class LogsController extends Controller
                 'emergency_vehicle_id' => $vehicle->id, // ✅ only the ID
             ]);
 
-            return redirect()->route('admin.logs-vehicles', 'All')->with('s.uccess', 'Successfully added vehicles');
+            return redirect()->route('admin.logs-vehicles', 'All')->with('success', 'Successfully added vehicles');
         } else {
             return redirect()->back()->with('error', 'Fail to add vehicles');
         }
@@ -270,6 +307,10 @@ class LogsController extends Controller
 
         $vehicle = EmergencyVehicle::findOrFail($id);
 
+        $vehicle->update([
+            'availabilityStatus' => 'Deleted'
+        ]);
+
         $vehicle->delete();
 
         if ($vehicle) {
@@ -290,37 +331,32 @@ class LogsController extends Controller
         }
     }
 
-    public function deleteLogVehicles($id)
-    {
-
-        $vehicle = Log::findOrFail($id)->delete();
-
-        return $vehicle ? redirect()->back()->with('success', 'Successfully deleted vehicle log') : redirect()->back()->with('error', 'Fail to delete vehicle log');
-    }
 
     public function restoreVehicle($id)
     {
-        // Find the soft-deleted vehicle
-        $vehicle = EmergencyVehicle::onlyTrashed()->find($id);
+        $vehicle = EmergencyVehicle::withTrashed()->findOrFail($id);
 
-        if (!$vehicle) {
-            return redirect()->back()->with('error', 'Vehicle not found or already restored.');
-        }
-        // Restore the vehicle
         $vehicle->restore();
 
         if ($vehicle) {
-            // Log the restore action
+
+            $vehicle->update([
+                'availabilityStatus' => 'Available'
+            ]);
+
             Log::create([
-                'interaction_type' => 'Restore',
-                'agency_id' => auth()->user()->agency_id,
+                'modified_by' => auth()->user()->lastname . '' . auth()->user()->firstname,
+                'interaction_type' => 'Restored',
+                'agency_id' => $vehicle->agency_id,
                 'emergency_vehicle_id' => $vehicle->id,
             ]);
+
             return redirect()->back()->with('success', 'Emergency Vehicle successfully restored.');
         } else {
-            return redirect()->back()->with('error', 'Vehicle cant be restore');
+            return redirect()->back()->with('error', 'Vehicle not found or already restored.');
         }
     }
+
 
 
 

@@ -150,8 +150,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('logs-edit-vehicles/{id}', 'edit')->name('logs-edit-vehicles');
         Route::put('logs-update-vehicles/{id}', 'updateVehicles')->name('logs-update-vehicles');
         Route::delete('logs-delete-vehicles/{id}', 'destroyVehicle')->name('logs-delete-vehicles');
-        Route::patch('logs-restore-vehicles/{id}', 'restoreVehicle')->name('logs-restore-vehicles');
-        Route::delete('logs-vehicle-delete/{id}', 'deleteLogVehicles')->name('logs-vehicle-delete');
+        Route::put('logs-restore-vehicles/{id}', 'restoreVehicle')->name('logs-restore-vehicles');
     });
 
     Route::controller(UserController::class)->group(function () {

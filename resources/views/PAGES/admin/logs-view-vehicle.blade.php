@@ -1,4 +1,3 @@
-{{-- resources/views/PAGES/admin/logs-view-vehicle.blade.php --}}
 <x-layout.layout>
 
     <x-partials.toast-messages />
@@ -7,8 +6,8 @@
 
         <!-- Header Image Section -->
         <div class="relative">
-            @if($log->emergencyVehicle && $log->emergencyVehicle->vehicle_photo)
-            <img src="{{ asset('storage/' . $log->emergencyVehicle->vehicle_photo) }}"
+            @if($vehicle->vehicle_photo)
+            <img src="{{ asset('storage/' .$vehicle->vehicle_photo) }}"
                 alt="Vehicle Photo"
                 class="w-full h-64 object-cover">
             @else
@@ -18,10 +17,10 @@
             @endif
 
             <!-- Overlay Label -->
-            @if($log->emergencyVehicle)
+            @if($vehicle)
             <div class="absolute bottom-4 left-4 bg-black/60 text-white px-4 py-2 rounded-lg">
-                <h2 class="text-xl font-semibold font-[Poppins]">{{ $log->emergencyVehicle->vehicleTypes }}</h2>
-                <p class="text-sm text-gray-200 font-[Poppins]">Plate No: {{ $log->emergencyVehicle->plateNumber }}</p>
+                <h2 class="text-xl font-semibold font-[Poppins]">{{ $vehicle->vehicleTypes }}</h2>
+                <p class="text-sm text-gray-200 font-[Poppins]">Plate No: {{ $vehicle->plateNumber }}</p>
             </div>
             @endif
         </div>
@@ -33,44 +32,44 @@
                 <p class="text-gray-500 text-sm font-[Poppins]">Detailed information about this emergency vehicle</p>
             </div>
 
-            @if($log->emergencyVehicle)
+            @if($vehicle)
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-[14px] font-[Poppins]">
 
                 <div>
                     <h4 class="text-gray-600 font-medium mb-1">Vehicle Agency</h4>
-                    <p class="text-gray-800 font-semibold">{{ $log->agency->agencyNames }}</p>
+                    <p class="text-gray-800 font-semibold">{{ $vehicle->agency->agencyNames }}</p>
                 </div>
                 <div>
                     <h4 class="text-gray-600 font-medium mb-1">Vehicle Type</h4>
-                    <p class="text-gray-800 font-semibold">{{ $log->emergencyVehicle->vehicleTypes }}</p>
+                    <p class="text-gray-800 font-semibold">{{ $vehicle->vehicleTypes }}</p>
                 </div>
 
                 <div>
                     <h4 class="text-gray-600 font-medium mb-1">Plate Number</h4>
-                    <p class="text-gray-800 font-semibold">{{ $log->emergencyVehicle->plateNumber }}</p>
+                    <p class="text-gray-800 font-semibold">{{ $vehicle->plateNumber }}</p>
                 </div>
 
                 <div>
                     <h4 class="text-gray-600 font-medium mb-1">Availability</h4>
                     <span class="inline-block px-3 py-1 text-xs rounded-full text-white font-semibold
-                            {{ ($log->emergencyVehicle->availabilityStatus) === 'Available' ? 'bg-green-500' : 'bg-red-500' }}">
-                        {{ ucfirst($log->emergencyVehicle->availabilityStatus) }}
+                            {{ ($vehicle->availabilityStatus) === 'Available' ? 'bg-green-500' : 'bg-red-500' }}">
+                        {{ ucfirst($vehicle->availabilityStatus) }}
                     </span>
                 </div>
 
                 <div>
                     <h4 class="text-gray-600 font-medium mb-1">Last Updated</h4>
-                    <p class="text-gray-800 font-semibold">{{ $log->emergencyVehicle->updated_at?->format('F d, Y h:i A') ?? '—' }}</p>
+                    <p class="text-gray-800 font-semibold">{{ $vehicle->updated_at?->format('F d, Y h:i A') ?? '—' }}</p>
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap justify-end gap-3 pt-4 border-t border-gray-200">
-                <a href="{{ route('admin.logs-edit-vehicles', $log->emergencyVehicle->id) }}"
+                <a href="{{ route('admin.logs-edit-vehicles', $vehicle->id) }}"
                     class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow transition">
                     Edit Vehicle
                 </a>
-                <form action="{{ route('admin.logs-delete-vehicles', $log->emergencyVehicle->id) }}" method="POST"
+                <form action="{{ route('admin.logs-delete-vehicles', $vehicle->id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to delete this vehicle?');">
                     @csrf
                     @method('DELETE')
