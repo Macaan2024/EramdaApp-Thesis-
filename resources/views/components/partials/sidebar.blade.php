@@ -45,20 +45,15 @@
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Dashboard
                 </a>
-                <a href="{{ route('admin.barangay') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Manage Barangay
-                </a>
-                <a href="{{ route('admin.incident-types') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Manage Incident Types
-                </a>
                 <a href="{{ route('admin.agency') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Manage Agency
+                </a>
+                <a href="{{ route('admin.agency') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Manage Incident Reports
                 </a>
                 <a href="{{ route('admin.logs', 'All') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">

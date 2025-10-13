@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barangays', function (Blueprint $table) {
+        Schema::create('emergency_room_beds', function (Blueprint $table) {
             $table->id();
-            $table->string('barangayNames')->unique();
-            $table->string('city');
-            $table->float('longitude')->nullable();
-            $table->float('latitude')->nullable();
-            $table->string('logo', 2080)->nullable();
+            $table->foreignId('agency_id')->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
+            $table->integer('bed_number');
+            $table->string('availabilityStatus')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barangays');
+        Schema::dropIfExists('emergency_room_beds');
     }
 };
