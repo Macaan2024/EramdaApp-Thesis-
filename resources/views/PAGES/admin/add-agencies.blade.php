@@ -34,15 +34,6 @@
                     </select>
                 </div>
 
-                <!-- Agency Name -->
-                <div>
-                    <label class="block mb-2 text-[12px] font-[Poppins]">Agency Name</label>
-                    <input type="text" name="agencyNames" id="agencyNames"
-                        placeholder="Bureau of Fire Station 4"
-                        class="font-[Poppins] text-[12px] bg-gray-50 border border-gray-300 rounded-lg block w-full p-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required />
-                </div>
-
                 <!-- Email -->
                 <div>
                     <label class="block mb-2 text-[12px] font-[Poppins]">Email Address</label>
@@ -50,8 +41,23 @@
                         class="bg-gray-100 cursor-not-allowed w-full p-2.5 border rounded-lg text-[12px]" />
                 </div>
 
-                <!-- Error Message -->
-                <div id="location-error" class="hidden text-red-600 text-[12px] font-[Poppins] bg-red-50 px-3 py-2 rounded-lg border border-red-300"></div>
+                <!-- Agency Name -->
+                <div>
+                    <label class="block mb-2 text-[12px] font-[Poppins]">Agency Name</label>
+                    <select name="agencyNames" id="agencyNames"
+                        class="font-[Poppins] text-[12px] bg-gray-50 border border-gray-300 rounded-lg block w-full p-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required>
+                        <option selected disabled>Choose Agency</option>
+                        @foreach ($agencies as $agency)
+                            <option 
+                                value="{{ $agency->agencyNames }}"
+                                data-lat="{{ $agency->latitude }}"
+                                data-lng="{{ $agency->longitude }}">
+                                {{ $agency->agencyNames }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <!-- Address -->
                 <div>
@@ -101,11 +107,11 @@
                         class="bg-gray-100 cursor-not-allowed font-[Poppins] text-[12px] border border-gray-300 rounded-lg block w-full p-2.5" />
                 </div>
 
+                <!-- Upload Logo -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 mb-1 text-[12px] font-[Poppins]">Upload Agency Logo</label>
                     <input type="file" name="logo"
-                        class="w-full border @error('logo') border-red-500 @else border-gray-300 @enderror
-                    rounded-lg cursor-pointer text-[12px] font-[Poppins]">
+                        class="w-full border @error('logo') border-red-500 @else border-gray-300 @enderror rounded-lg cursor-pointer text-[12px] font-[Poppins]">
                     @error('logo')
                     <p class="text-red-500 text-[11px] mt-1 font-[Poppins]">{{ $message }}</p>
                     @enderror
@@ -135,95 +141,57 @@
         </div>
     </div>
 
-    <!-- Leaflet CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <x-partials.stack-js />
 
+    <!-- ✅ Leaflet + Dynamic Autofill Script -->
     <script>
-        // Default Iligan coords
-        let lat = 8.228,
-            lon = 124.245;
-        let map = L.map('map').setView([lat, lon], 13);
-        let marker = L.marker([lat, lon]).addTo(map);
+    document.addEventListener('DOMContentLoaded', function () {
+        const agencySelect = document.getElementById('agencyNames');
+        const longitudeInput = document.getElementById('longitude');
+        const latitudeInput = document.getElementById('latitude');
+        const addressInput = document.getElementById('address');
+        const cityInput = document.getElementById('city');
+        const barangayInput = document.getElementById('barangayField');
+        const zipcodeInput = document.getElementById('zipcode');
 
+        const map = L.map('map').setView([8.485, 124.657], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        async function fetchCoordinatesAndAddress() {
-            const agency = document.getElementById('agencyNames').value.trim();
-            const errorBox = document.getElementById('location-error');
+        let marker;
 
-            const lonField = document.getElementById('longitude');
-            const latField = document.getElementById('latitude');
-            const cityField = document.getElementById('city');
-            const barangayField = document.getElementById('barangayField');
-            const zipField = document.getElementById('zipcode');
-            const addressField = document.getElementById('address');
+        agencySelect.addEventListener('change', function () {
+            const selected = agencySelect.options[agencySelect.selectedIndex];
+            const lat = selected.getAttribute('data-lat');
+            const lng = selected.getAttribute('data-lng');
 
-            // reset fields
-            errorBox.classList.add('hidden');
-            errorBox.innerHTML = "";
-            lonField.value = "";
-            latField.value = "";
-            cityField.value = "";
-            barangayField.value = "";
-            zipField.value = "";
-            addressField.value = "";
+            if (lat && lng) {
+                const latNum = parseFloat(lat);
+                const lngNum = parseFloat(lng);
 
-            if (!agency) return;
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([latNum, lngNum]).addTo(map);
+                map.setView([latNum, lngNum], 15);
 
-            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(agency)}&format=json&limit=1`;
+                latitudeInput.value = latNum;
+                longitudeInput.value = lngNum;
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.length > 0) {
-                    const lon = data[0].lon;
-                    const lat = data[0].lat;
-                    lonField.value = lon;
-                    latField.value = lat;
-                    addressField.value = data[0].display_name; // full address
-
-                    // Update map
-                    map.setView([lat, lon], 15);
-                    marker.setLatLng([lat, lon]);
-
-                    // reverse geocode
-                    const reverseUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
-                    const reverseRes = await fetch(reverseUrl);
-                    const reverseData = await reverseRes.json();
-
-                    if (reverseData.address) {
-                        const addr = reverseData.address;
-
-                        // city
-                        if (addr.city) cityField.value = addr.city;
-                        else if (addr.town) cityField.value = addr.town;
-                        else if (addr.municipality) cityField.value = addr.municipality;
-
-                        if (addr.suburb) barangayField.value = addr.suburb;
-                        else if (addr.village) barangayField.value = addr.village;
-                        else if (addr.neighbourhood) barangayField.value = addr.neighbourhood;
-                        else if (addr.hamlet) barangayField.value = addr.hamlet;
-                        else if (addr.quarter) barangayField.value = addr.quarter;
-
-                        // zip
-                        if (addr.postcode) zipField.value = addr.postcode;
-                    }
-                } else {
-                    errorBox.innerHTML = `❌ No coordinates found for "<b>${agency}</b>".`;
-                    errorBox.classList.remove('hidden');
-                }
-            } catch (error) {
-                errorBox.innerHTML = "⚠️ Failed to fetch coordinates. Please try again.";
-                errorBox.classList.remove('hidden');
+                // Reverse geocode using OpenStreetMap
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latNum}&lon=${lngNum}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        addressInput.value = data.display_name || "N/A";
+                        cityInput.value = data.address.city || data.address.town || data.address.village || "N/A";
+                        barangayInput.value = data.address.suburb || data.address.neighbourhood || "N/A";
+                        zipcodeInput.value = data.address.postcode || "N/A";
+                    })
+                    .catch(() => {
+                        addressInput.value = cityInput.value = barangayInput.value = zipcodeInput.value = "N/A";
+                    });
             }
-        }
-
-        document.getElementById('agencyNames').addEventListener('blur', fetchCoordinatesAndAddress);
+        });
+    });
     </script>
-
-    <x-partials.stack-js />
 </x-layout.layout>

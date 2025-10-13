@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('barangay_longitude');
             $table->string('barangay_latitude');
             $table->string('report_status');
+            $table->string('reported_by');
+            $table->string('from_agency');
             $table->timestamps();
         });
     }

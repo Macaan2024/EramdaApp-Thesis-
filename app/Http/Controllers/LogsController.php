@@ -5,12 +5,66 @@ namespace App\Http\Controllers;
 use App\Models\Agency;
 use App\Models\EmergencyVehicle;
 use App\Models\Log;
+use App\Models\SubmittedReport;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class LogsController extends Controller
 {
+
+    public function reportLogs(Request $request, $status, $id = null)
+    {
+        $agencies = Agency::all();
+        $search = $request->input('search');
+
+        if (empty($id)) {
+
+            if ($status === 'All') {
+
+                $reports = SubmittedReport::paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            } elseif ($status === 'Pending') {
+
+                $reports = SubmittedReport::where('report_status', 'Pending')->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            } elseif ($status === 'Ongoing') {
+
+                $reports = SubmittedReport::where('report_status', 'Ongoing')->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            } elseif ($status === 'Resolved') {
+
+                $reports = SubmittedReport::where('report_status', 'Resolved')->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            }
+        } else {
+
+            if ($status === 'All') {
+
+                $reports = SubmittedReport::where('from_agency', $id)->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            } elseif ($status === 'Pending') {
+
+                $reports = SubmittedReport::where('report_status', 'Pending')
+                    ->where('from_agency', $id)
+                    ->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            } elseif ($status === 'Ongoing') {
+
+                $reports = SubmittedReport::where('report_status', 'Ongoing')
+                    ->where('from_agency', $id)
+                    ->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            } elseif ($status === 'Resolved') {
+
+                $reports = SubmittedReport::where('report_status', 'Resolved')
+                    ->where('from_agency', $id)
+                    ->paginate(10);
+                return view('PAGES/admin/log-reports', compact('status', 'id', 'reports', 'agencies'));
+            }
+        }
+    }
+
 
     public function userLogs(Request $request, $status, $id = null)
     {
