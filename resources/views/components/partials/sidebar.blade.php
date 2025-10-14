@@ -7,7 +7,40 @@
 
         <ul class="space-y-2 font-medium">
 
-            @if (auth()->user()->agency->agencyTypes === 'BFP' || auth()->user()->agency->agencyTypes === 'BDRRMC' )
+
+            @if ((auth()->user()->user_type === 'admin'))
+
+
+            <li>
+                <a href="{{ route('admin.dashboard') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Dashboard
+                </a>
+                <a href="{{ route('admin.agency') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Manage Agency
+                </a>
+
+                <a href="{{ route('admin.log-reports', 'All') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Incident Report Logs
+                </a>
+                <a href="{{ route('admin.agency') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Manage Incident Reports
+                </a>
+                <a href="{{ route('admin.logs', 'All') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Manage Logs
+                </a>
+            </li>
+
+            @elseif (auth()->user()->agency->agencyTypes === 'BFP' || auth()->user()->agency->agencyTypes === 'BDRRMC' )
             <li>
                 <a href="{{ route('bfp.dashboard') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
@@ -37,38 +70,6 @@
                 </a>
             </li>
             @endif
-
-            @if (auth()->user()->user_type === 'admin')
-            <li>
-                <a href="{{ route('admin.dashboard') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Dashboard
-                </a>
-                <a href="{{ route('admin.agency') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Manage Agency
-                </a>
-
-                <a href="{{ route('admin.log-reports', 'All') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Incident Report Logs
-                </a>
-                <a href="{{ route('admin.agency') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Manage Incident Reports
-                </a>
-                <a href="{{ route('admin.logs', 'All') }}"
-                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
-                    <span class="material-symbols-outlined mr-2">dashboard</span>
-                    Manage Logs
-                </a>
-            </li>
-            @endif
-
         </ul>
     </div>
 </aside>

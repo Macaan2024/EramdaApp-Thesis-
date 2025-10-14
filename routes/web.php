@@ -61,32 +61,6 @@ Route::prefix('bfp')->name('bfp.')->group(function () {
         Route::get('vehicles/search', 'index')->name('search-vehicles'); //done
         Route::get('vehicles/view-vehicles/{id}', 'show')->name('view-vehicles'); //done
     });
-
-
-
-    Route::controller(IncidentReportsController::class)->group(function () {
-        Route::get('reports', 'submittedReports')->name('submitted-reports'); //done
-        Route::get('requests', 'requestReports')->name('request-reports'); //done
-        Route::get('receive', 'receiveReports')->name('receive-reports'); //done
-        Route::get('reports/add/{types}', 'create')->name('create-reports'); //done
-        Route::post('submit-reports', 'addReports')->name('submit-reports'); //done
-
-        Route::get('search-submitted-reports', 'submittedReports')->name('search-submitted-reports'); //done
-        Route::get('search-request-reports', 'requestReports')->name('search-request-reports'); //done
-        Route::get('search-receive-reports', 'receiveReports')->name('search-receive-reports'); //done
-
-
-
-
-
-        // Route::view('reports/add-reports', 'PAGES/BFP/add-reports')->name('add-reports'); //done
-        // Route::post('submit-reports', 'addReports')->name('submit-reports'); //done
-        // Route::delete('delete-reports/{id}', 'destroy')->name('delete-reports'); //done
-        // Route::get('reports/edit-reports/{id}', 'edit')->name('edit-reports'); //done
-        // Route::put('reports/update-reports/{id}', 'updateReports')->name('update-reports'); //done
-        // Route::get('reports/search', 'index')->name('search-reports'); //done
-        // Route::get('reports/view-reports/{id}', 'show')->name('view-reports'); //done
-    });
 });
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -94,12 +68,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // 🔹 Admin Agencies Management
     Route::controller(AgencyController::class)->group(function () {
         Route::get('agency', 'index')->name('agency');
-        Route::get('add-agency', 'displayBarangay')->name('add-agency');
-        Route::post('submit-agency', 'addAgency')->name('submit-agency');
-        Route::get('search-agency', 'index')->name('search-agency');
-        Route::delete('delete-agency/{id}', 'destroy')->name('delete-agency');
-        Route::get('edit-agency/{id}', 'edit')->name('edit-agency');
-        Route::put('update-agency/{id}', 'updateAgencies')->name('update-agency');
+        Route::view('add/agency', 'PAGES/admin/add-agency')->name('add-agency');
+        Route::post('submit-agency/agency', 'submitAgency')->name('submit-agency');
     });
 
     Route::controller(LogsController::class)->group(function () {

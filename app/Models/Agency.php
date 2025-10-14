@@ -17,14 +17,20 @@ class Agency extends Model
     protected $fillable = [
         'agencyNames',
         'agencyTypes',
-        'email',
-        'barangay',
+        'region',
+        'province',
         'city',
+        'barangay',
         'address',
+        'zipcode',
+        'email',
+
+
+
         'longitude',
         'latitude',
-        'zipcode',
-        'activeStatus',
+
+        'availabilityStatus',
         'logo'
     ];
 
