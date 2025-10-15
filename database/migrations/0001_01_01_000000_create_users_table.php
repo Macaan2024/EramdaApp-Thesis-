@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('agency_id')->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('agency_id')->nullable()->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
             $table->string('user_type'); //update ERD to snake_case
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

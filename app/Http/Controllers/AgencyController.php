@@ -23,127 +23,102 @@ class AgencyController extends Controller
             ], 'like', '%'  . $request->search . '%');
         })->paginate(10);
 
-        return view('PAGES/admin/manage-agencies', compact('agencies'));
+        $totalBFP = Agency::where('agencyTypes', 'BFP')->count();
+        $totalBDRRMC = Agency::where('agencyTypes', 'BDRRMC')->count();
+        $totalHOSPITAL = Agency::where('agencyTypes', 'HOSPITAL')->count();
+        $totalCDRRMO = Agency::where('agencyTypes', 'CDRRMO')->count();
+        
+
+        return view('PAGES/admin/manage-agency', compact('agencies', 'totalBFP', 'totalHOSPITAL', 'totalBDRRMC', 'totalCDRRMO'));
     }
 
-    public function addAgency(Request $request)
-    {
-        $request->validate([
-            'agencyNames'  => 'required|string|max:150|unique:agencies,agencyNames',
-            'agencyTypes'  => 'required|string|max:100',
-            'email'        => 'required|email|max:150|unique:agencies,email',
-            'barangay'     => 'required|string|max:100',
-            'city'         => 'required|string|max:100',
-            'address'      => 'required|string|max:255',
-            'longitude'    => 'required|numeric|between:-180,180',
-            'latitude'     => 'required|numeric|between:-90,90',
-            'zipcode'      => 'required|integer|digits:4', // ✅ must be integer and 4 digits
-            'activeStatus' => 'required|in:Available,Inactive',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
 
+    public function submitAgency(Request $request)
+    {
+        $validatedData = $request->validate([
+            'agencyNames' => 'required|string|unique:agencies,agencyNames',
+            'agencyTypes' => 'required|in:BFP,BDRRMC,CDRRMO,HOSPITAL',
+            'region' => 'required|string',
+            'province' => 'required|string',
+            'city' => 'required|string|in:Iligan City',
+            'barangay' => 'required|string',
+            'zipcode' => 'nullable|string',
+            'email' => 'required|email|unique:agencies,email',
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'availabilityStatus' => 'required|in:Available,Unavailable',
+            'logo' => 'nullable|image|max:2048',
         ]);
 
-        $logoPath = null;
+        // Auto create address
+        $validatedData['address'] = $validatedData['barangay'] . ', ' .
+            $validatedData['city'] . ', ' .
+            $validatedData['province'] . ', ' .
+            $validatedData['region'];
+
+        // Upload logo if exists
         if ($request->hasFile('logo')) {
-            // store in storage/app/public/logos
-            $logoPath = $request->file('logo')->store('logos', 'public');
+            $validatedData['logo'] = $request->file('logo')->store('logos', 'public');
         }
 
-        $agencies = Agency::create([
-            'agencyNames'  => $request->agencyNames,
-            'agencyTypes'  => $request->agencyTypes,
-            'barangay'      => $request->barangay,
-            'address'      => $request->address,
-            'email'        => $request->email,
-            'city'         => $request->city,
-            'longitude'    => $request->longitude,
-            'latitude'     => $request->latitude,
-            'zipcode'      => $request->zipcode,
-            'activeStatus' => $request->activeStatus,
-            'logo' => $logoPath
+        $submittedAgency = Agency::create($validatedData);
 
-        ]);
 
-        return $agencies
-            ? redirect()->route('admin.agency')->with('success', 'Successfully Register Agency')
-            : redirect()->back()->with('error', 'Failed to Register Agency');
+        return $submittedAgency ? redirect()->route('admin.agency')->with('success', 'Successfully Submitted Agency') : redirect()->back()->with('errors', 'Fail to Submit Agency')->withInput();
     }
 
 
-    public function edit($id)
+    // View single agency
+    public function viewAgency($id)
     {
         $agency = Agency::findOrFail($id);
-
-        $barangays = Barangay::orderBy('barangayNames', 'asc')->get();
-
-
-        return view('PAGES/admin/edit-agencies', compact('agency', 'barangays'));
+        return view('PAGES/admin/view-agency', compact('agency'));
     }
 
-    public function updateAgencies(Request $request, $id)
+    // Show edit form
+    public function editAgency($id)
     {
-        $agencies = Agency::findOrFail($id);
+        $agency = Agency::findOrFail($id);
+        return view('PAGES.admin.edit-agency', compact('agency'));
+    }
 
-        $request->validate([
-            'agencyNames'  => 'required|string|max:150|unique:agencies,agencyNames,' . $id,
-            'agencyTypes'  => 'required|string|max:100',
-            'email',
-            Rule::unique('agencies', 'email')->ignore($id),
-            'region'   => 'nullable|string|max:100',
-            'province' => 'nullable|string|max:100',
-            'city'         => 'required|string|max:100',
-            'address'      => 'required|string|max:255',
-            'longitude'    => 'required|numeric|between:-180,180',
-            'latitude'     => 'required|numeric|between:-90,90',
-            'zipcode'      => 'required|integer|digits:4',
-            'activeStatus' => 'required|in:Active,Inactive,Unavailable',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-
+    public function updateAgency(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'agencyTypes' => 'required|string',
+            'agencyNames' => 'required|string',
+            'email' => 'required|email',
+            'barangay' => 'required|string',
+            'zipcode' => 'required|string',
+            'address' => 'required|string',
+            'longitude' => 'required|string',
+            'latitude' => 'required|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // keep old logo unless new uploaded
-        $logoPath = $agencies->logo;
+        $agency = Agency::findOrFail($id);
 
+        // 🖼 Handle logo upload (if user uploads a new one)
         if ($request->hasFile('logo')) {
+
+            // Store new logo
             $logoPath = $request->file('logo')->store('logos', 'public');
+            $validated['logo'] = $logoPath;
         }
 
+        $agency->update($validated);
 
-        $updated = $agencies->update([
-            'agencyNames'  => $request->agencyNames,
-            'agencyTypes'  => $request->agencyTypes,
-            'address'      => $request->address,
-            'email'        => $request->email,
-            'city'         => $request->city,
-            'longitude'    => $request->longitude,
-            'latitude'     => $request->latitude,
-            'zipcode'      => $request->zipcode,
-            'activeStatus' => $request->activeStatus,
-            'logo'         => $logoPath
-
-        ]);
-
-        return $updated
-            ? redirect()->route('admin.agency')->with('success', 'Successfully Edit Agency')
-            : redirect()->back()->with('errors', 'Fail to Update');
+        return redirect()->route('admin.agency')->with('success', 'Agency updated successfully!');
     }
 
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
+
+    // Delete agency
+    public function deleteAgency($id)
     {
-        $agencies = Agency::findOrFail($id)->delete();
+        $agency = Agency::findOrFail($id);
+        $agency->delete();
 
-        return redirect()->back()->with('success', 'Successfully Delete Agency');
-    }
-
-    public function displayBarangay()
-    {
-
-        $barangays = Barangay::orderBy('barangayNames', 'asc')->get();
-
-        return view('PAGES/admin/add-agencies', compact('barangays'));
+        return redirect()->route('admin.agency')->with('success', 'Agency deleted successfully.');
     }
 }

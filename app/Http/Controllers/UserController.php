@@ -107,16 +107,21 @@ class UserController extends Controller
             'availability_status' => $request->availability_status,
         ]);
 
-        // Log action
-        Log::create([
-            'interaction_type' => 'Add Responder',
-            'agency_id' => auth()->user()->agency_id,
-            'user_id' => $responder->id,
-        ]);
+        if ($responder) {
 
-        return $responder
-            ? redirect()->route('bfp.responders')->with('success', 'Successfully Register Responder.')
-            : redirect()->back()->with('errors', 'Register fail, Please try again.')->withInput();
+            Log::create([
+                'modified_by' => auth()->user()->firstname . ' ' . auth()->user()->lastname,
+                'interaction_type' => 'Add',
+                'agency_id' => auth()->user()->agency_id,
+                'user_id' => $responder->id,
+            ]);
+
+            return redirect()->route('bfp.responders')->with('success', 'Successfully Register Responder.');
+
+        } else {
+
+           return redirect()->back()->with('errors', 'Register fail, Please try again.')->withInput();
+        }
     }
 
     public function edit($id)

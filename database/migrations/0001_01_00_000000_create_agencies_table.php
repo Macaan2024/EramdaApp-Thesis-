@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->float('longitude')->nullable();
             $table->float('latitude')->nullable();
-            $table->string('activeStatus');
+            $table->string('availabilityStatus');
             $table->string('logo', 2080)->nullable();
             $table->timestamps();
         });
