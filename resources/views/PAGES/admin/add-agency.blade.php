@@ -31,10 +31,8 @@
 
             <!-- Agency Type -->
             <div>
-                <label for="agencyTypes" class="block font-semibold text-[14px] mb-1 text-gray-700">Agency Type</label>
-                <select
-                    name="agencyTypes"
-                    id="agencyType"
+                <label for="agencyType" class="block font-semibold text-[14px] mb-1 text-gray-700">Agency Type</label>
+                <select name="agencyTypes" id="agencyType"
                     class="w-full text-[12px] text-gray-700 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
                     <option value="">Select Type</option>
                     <option value="BFP">Bureau of Fire Protection</option>
@@ -49,10 +47,8 @@
 
             <!-- Agency Name -->
             <div>
-                <label for="agencyNames" class="block font-semibold text-[14px] mb-1 text-gray-700">Agency Name</label>
-                <select
-                    name="agencyNames"
-                    id="agencyName"
+                <label for="agencyName" class="block font-semibold text-[14px] mb-1 text-gray-700">Agency Name</label>
+                <select name="agencyNames" id="agencyName"
                     class="w-full text-[12px] text-gray-700 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-600 focus:outline-none">
                     <option value="">Choose Agency</option>
                 </select>
@@ -77,17 +73,11 @@
                     <label class="block font-semibold text-[14px] mb-1 text-gray-700">Region</label>
                     <input type="text" name="region" readonly value="REGION-X"
                         class="w-full text-[12px] border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-700" />
-                    @error('region')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
                 <div>
                     <label class="block font-semibold text-[14px] mb-1 text-gray-700">Province</label>
                     <input type="text" name="province" readonly value="Lanao Del Norte"
                         class="w-full text-[12px] border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-700" />
-                    @error('province')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
             </div>
 
@@ -97,17 +87,11 @@
                     <label class="block font-semibold text-[14px] mb-1 text-gray-700">City</label>
                     <input type="text" value="Iligan City" readonly name="city"
                         class="w-full text-[12px] border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-700" />
-                    @error('city')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
                 <div>
                     <label class="block font-semibold text-[14px] mb-1 text-gray-700">Barangay</label>
                     <input type="text" name="barangay"
                         class="w-full text-[12px] border border-gray-300 rounded-lg p-2 text-gray-700" />
-                    @error('barangay')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
             </div>
 
@@ -117,17 +101,11 @@
                     <label class="block font-semibold text-[14px] mb-1 text-gray-700">Zip Code</label>
                     <input type="text" name="zipcode"
                         class="w-full text-[12px] border border-gray-300 rounded-lg p-2 text-gray-700" />
-                    @error('zipcode')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
                 <div>
                     <label class="block font-semibold text-[14px] mb-1 text-gray-700">Address</label>
                     <input type="text" name="address" id="address"
                         class="w-full text-[12px] border border-gray-300 rounded-lg p-2 text-gray-700" />
-                    @error('address')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
                 </div>
             </div>
 
@@ -135,21 +113,13 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="longitude" class="block font-semibold text-[14px] mb-1 text-gray-700">Longitude</label>
-                    <input type="text" id="longitude"
-                        class="w-full text-[12px] border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                        name="longitude" readonly />
-                    @error('longitude')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
+                    <input type="text" id="longitude" name="longitude" readonly
+                        class="w-full text-[12px] border border-gray-300 rounded-lg p-2" />
                 </div>
                 <div>
                     <label for="latitude" class="block font-semibold text-[14px] mb-1 text-gray-700">Latitude</label>
-                    <input type="text" id="latitude"
-                        class="w-full text-[12px] border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-600 focus:outline-none"
-                        name="latitude" readonly />
-                    @error('latitude')
-                    <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                    @enderror
+                    <input type="text" id="latitude" name="latitude" readonly
+                        class="w-full text-[12px] border border-gray-300 rounded-lg p-2" />
                 </div>
             </div>
 
@@ -158,15 +128,12 @@
                 <label class="block font-semibold text-[14px] mb-1 text-gray-700">Upload Logo</label>
                 <input type="file" name="logo" id="logoInput" accept="image/*" class="mb-2" />
                 <div>
-                    <img id="logoPreview" src="" alt="Uploaded Logo" class="w-32 h-32 object-contain border border-gray-300 rounded-lg hidden" />
+                    <img id="logoPreview" src="" alt="Uploaded Logo"
+                        class="w-32 h-32 object-contain border border-gray-300 rounded-lg hidden" />
                 </div>
-                @error('logo')
-                <p class="text-red-500 text-[11px] mt-1">{{ $message }}</p>
-                @enderror
             </div>
 
             <input type="hidden" value="Available" name="availabilityStatus">
-
             <input type="submit"
                 class="w-full bg-green-600 py-3 px-2 text-[12px] text-white font-[Poppins] rounded-lg hover:bg-green-700 transition" />
         </form>
@@ -183,25 +150,22 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <script>
-        //LOGO SCRIPTS
-
+        // LOGO PREVIEW
         const logoInput = document.getElementById('logoInput');
         const logoPreview = document.getElementById('logoPreview');
 
         logoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = () => {
-                logoPreview.src = reader.result; // show uploaded image
-                logoPreview.classList.remove('hidden'); // make it visible
+                logoPreview.src = reader.result;
+                logoPreview.classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         });
 
-        // MAP SCRIPTS
-
+        // MAP SETUP
         const agencies = {
             BFP: [{
                     name: "Iligan City Fire Station",
@@ -323,6 +287,7 @@
         }).addTo(map);
         marker.bindPopup("<b>Iligan City</b>").openPopup();
 
+        // Dropdown controls
         const agencyTypeSelect = document.getElementById("agencyType");
         const agencyNameSelect = document.getElementById("agencyName");
         const latitudeInput = document.getElementById("latitude");
@@ -340,15 +305,12 @@
             const type = agencyTypeSelect.value;
             agencyNameSelect.innerHTML = `<option value="">Choose Agency</option>`;
             if (!type || !agencies[type]) return;
-
             agencies[type].forEach(a => {
                 const option = document.createElement("option");
                 option.value = a.name;
                 option.text = a.name;
-                option.className = "text-gray-700";
                 agencyNameSelect.appendChild(option);
             });
-
             latitudeInput.value = "";
             longitudeInput.value = "";
         });
@@ -357,7 +319,6 @@
             const type = agencyTypeSelect.value;
             const agencyName = agencyNameSelect.value;
             if (!type || !agencyName) return;
-
             const agency = agencies[type].find(a => a.name === agencyName);
             if (agency) updateMarker(agency.lat, agency.lon, agency.name);
         });
@@ -371,7 +332,7 @@
             longitudeInput.value = lng.toFixed(6);
         });
 
-        // Auto-update address
+        // Auto-address update
         const barangayInput = document.querySelector('input[name="barangay"]');
         const cityInput = document.querySelector('input[name="city"]');
         const provinceInput = document.querySelector('input[name="province"]');
@@ -389,31 +350,21 @@
         barangayInput.addEventListener("input", updateAddress);
         updateAddress();
 
-
+        // Existing saved agencies
+        // Existing saved agencies
         const savedAgencies = @json($agencies);
-
-
         if (savedAgencies && savedAgencies.length > 0) {
             savedAgencies.forEach(agency => {
                 if (agency.latitude && agency.longitude) {
                     const logo = agency.logo ?
-                        `
-                        <div class="flex flex-row gap-2 items-center justify-center">
-                        <img src='/storage/${agency.logo}' class='w-6 h-6 object-contain mb-1'/>` :
-                        '';
+                        `<div class='flex flex-row gap-2 items-center justify-center'>
+                    <img src='/storage/${agency.logo}' class='w-6 h-6 object-contain mb-1'/>
+                </div>` : '';
 
-                    const marker = L.marker([agency.latitude, agency.longitude]).addTo(map);
-                    const popupContent = `
-                <div class='text-center'>
-                    ${logo}
-                    <b>${agency.agencyNames}</b>
-                </div>
-                </div>
-            `;
-                    marker.bindPopup(popupContent, {
-                        autoClose: false,
-                        closeOnClick: false
-                    }).openPopup();
+                    const savedMarker = L.marker([agency.latitude, agency.longitude]).addTo(map);
+                    savedMarker.bindPopup(
+                        `<div class='text-center'>${logo}<b>${agency.agencyNames}</b></div>`
+                    ).openPopup(); // ✅ auto-show popup
                 }
             });
         }

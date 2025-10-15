@@ -383,7 +383,7 @@
 
         const savedAgencies = @json($agencies);
 
-        const currentAgency = {{ $agency->id}};
+        const currentAgency = {{$agency->id}};
 
 
         if (savedAgencies && savedAgencies.length > 0) {
