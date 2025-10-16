@@ -14,12 +14,20 @@ class SubmittedReport extends Model
         'incident_category',
         'incident_type',
         'city_name',
+        'purok',
+        'street_name',
         'barangay_name',
         'barangay_longitude',
         'barangay_latitude',
         'report_status',
         'reported_by',
         'from_agency',
+        'alarm_level',
+        'fire_truck_request',
+        'ambulance_request',
+        'police_car_request',
+        'vehicle_type_request',
+ 
     ];
 
 

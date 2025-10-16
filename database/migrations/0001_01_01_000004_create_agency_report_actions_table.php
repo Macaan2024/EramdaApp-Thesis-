@@ -13,17 +13,16 @@ return new class extends Migration
     {
         Schema::create('agency_report_actions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('submitted_report_id')->constrained('submitted_reports')->onDelete('cascade')->onUpdate('cascade');
             $table->string('shortestpath_trigger_num');
+            $table->float('incident_longitude');
+            $table->float('incident_latitude');
             $table->string('nearest_agency_name');
+            $table->string('agency_type');
             $table->float('agency_longitude');
-            $table->float('agency_latitue');
-            $table->string('vehicle_type_requested');
-            $table->string('vehicle_num_requested');
-            $table->string('agency_vehicle_num_can_provide');
-            $table->string('agency_vehicle_type_can_provide');
+            $table->float('agency_latitude');
             $table->string('report_action');
-            $table->string('decline_reason');
+            $table->string('decline_reason')->nullable();
             $table->timestamps();
         });
     }

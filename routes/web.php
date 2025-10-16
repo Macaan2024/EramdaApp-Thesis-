@@ -80,7 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::controller(LogsController::class)->group(function () {
         //manage logs
         Route::get('logs/{status}', 'index')->name('logs');
-        Route::get('logs/reports/{status}/{id?}', 'reportLogs')->name('log-reports');
+        
 
 
         // User logs
@@ -108,8 +108,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
     Route::controller(SubmittedReportController::class)->group(function () {
+        Route::get('logs/reports/{status}/{id?}', 'reportLogs')->name('log-reports');
         Route::view('add/incident-reports', 'PAGES/admin/add-incident-reports')->name('add-incident-reports');
         Route::post('submit-reports/incident-reports', 'submitReports')->name('submit-reports');
+        
     });
 
 
