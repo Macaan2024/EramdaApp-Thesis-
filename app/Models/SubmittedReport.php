@@ -27,7 +27,6 @@ class SubmittedReport extends Model
         'ambulance_request',
         'police_car_request',
         'vehicle_type_request',
- 
     ];
 
 

@@ -29,15 +29,6 @@ Route::controller(AuthenticationController::class)->group(function () {
 
 
 
-Route::controller(DashboardsController::class)->group(function () {
-    Route::get('bfp/dashboard', 'bfp')->name('bfp.dashboard');
-    Route::get('bdrrmc/dashboard', 'bdrrmc')->name('bdrrmc.dashboard');
-    Route::get('admin/dashboard', 'admin')->name('admin.dashboard');
-    Route::get('hospital/dashboard', 'admin')->name('hospital.dashboard');
-});
-
-
-
 Route::prefix('bfp')->name('bfp.')->group(function () {
 
     Route::controller(PersonnelRespondersController::class)->group(function () {
@@ -63,30 +54,40 @@ Route::prefix('bfp')->name('bfp.')->group(function () {
     });
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+
+    Route::controller(DashboardsController::class)->group(function () {
+        Route::get('dashboard', 'admin')->name('dashboard');
+    });
 
     // 🔹 Admin Agencies Management
     Route::controller(AgencyController::class)->group(function () {
         Route::get('agency', 'index')->name('agency');
         Route::view('add/agency', 'PAGES/admin/add-agency')->name('add-agency');
+        Route::post('submit-agency/agency', 'submitAgency')->name('submit-agency');
         Route::get('edit/agency/{id}', 'editAGency')->name('edit-agency');
         Route::post('update/agency/{id}', 'updateAgency')->name('update-agency');
         Route::delete('delete/agency/{id}', 'deleteAgency')->name('delete-agency');
         Route::get('view/agency/{id}', 'viewAgency')->name('view-agency');
         Route::post('search/agency', 'searchAgency')->name('search-agency');
-        Route::post('submit-agency/agency', 'submitAgency')->name('submit-agency');
+    });
+
+    // 🔹 Admin User Management
+    Route::controller(UserController::class)->group(function () {
+        Route::get('user/{status}/{id?}', 'userIndex')->name('user');
+        Route::post('submit/user', 'userSubmit')->name('submit-user');
+        Route::put('update/user/{id}', 'userUpdate')->name('update-user');
+        Route::post('deactivate/user{id}', 'userDeactivate')->name('deactivate-user');
+        Route::delete('delete/user/{id}', 'userDelete')->name('delete-user');
     });
 
     Route::controller(LogsController::class)->group(function () {
         //manage logs
         Route::get('logs/{status}', 'index')->name('logs');
-        
-
 
         // User logs
         Route::get('logs-users/{status}/{id?}', 'userLogs')->name('logs-users');
         Route::get('logs-view-users/{id}', 'showUser')->name('logs-view-users');
-        Route::get('logs-users-add', 'usersAdd')->name('logs-users-add'); // Add user page
         Route::post('logs-add-users', 'addUsers')->name('logs-add-users'); // Store user
         Route::get('logs-edit-users/{id}', 'editUser')->name('logs-edit-users');
         Route::put('logs-update-users/{id}', 'updateUser')->name('logs-update-users');
@@ -111,11 +112,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('logs/reports/{status}/{id?}', 'reportLogs')->name('log-reports');
         Route::view('add/incident-reports', 'PAGES/admin/add-incident-reports')->name('add-incident-reports');
         Route::post('submit-reports/incident-reports', 'submitReports')->name('submit-reports');
-        
     });
+});
 
-
-
-    // Logs Report
-
+Route::prefix('nurse-chief')->name('nurse-chief.')->middleware('nurse-chief')->group(function () {
+    Route::controller(DashboardsController::class)->group(function () {});
 });

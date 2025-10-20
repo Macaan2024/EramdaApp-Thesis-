@@ -98,7 +98,9 @@ class SubmittedReportController extends Controller
             $incidentLng = $submittedReport->barangay_longitude;
 
             // Only select available agencies
-            $agencies = Agency::where('availabilityStatus', 'Available')->get();
+            $agencies = Agency::where('availabilityStatus', 'Available')
+                ->where('agencyTypes', '!=', 'HOSPITAL')
+                ->get();
 
             $nearestAgency = null;
             $shortestDistance = PHP_FLOAT_MAX;
@@ -122,8 +124,8 @@ class SubmittedReportController extends Controller
                 AgencyReportAction::create([
                     'submitted_report_id' => $submittedReport->id,
                     'shortestpath_trigger_num' => $shortestDistance,
-                    'incident_longitude' => $request->longitude,
-                    'incident_latitude' => $request->latitude,
+                    'incident_longitude' => $incidentLng,
+                    'incident_latitude' => $incidentLat,
                     'nearest_agency_name' => $nearestAgency->agencyNames,
                     'agency_type' => $nearestAgency->agencyTypes,
                     'agency_longitude' => $nearestAgency->longitude,

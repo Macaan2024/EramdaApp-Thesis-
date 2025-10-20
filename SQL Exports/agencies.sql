@@ -64,7 +64,7 @@ INSERT INTO `agencies` (`id`, `agencyNames`, `agencyTypes`, `region`, `province`
 (11, 'Iligan Medical Center Hospital', 'HOSPITALS', 'Region X - Northern Mindanao', 'Lanao del Norte', 'Iligan City', 'Pala-o', 'San Miguel Village, Pala-o', '9200', 'imch@iligan.gov.ph', NULL, NULL, 'active', '2025-09-03 03:11:13', '2025-09-03 03:11:13', NULL),
 (12, 'Gregorio T. Lluch Memorial Hospital', 'HOSPITALS', 'Region X - Northern Mindanao', 'Lanao del Norte', 'Iligan City', 'Poblacion', 'Quezon Avenue Extension, Poblacion', '9200', 'gtlmh@iligan.gov.ph', NULL, NULL, 'active', '2025-09-03 03:11:13', '2025-09-03 03:11:13', NULL),
 (13, 'Mercy Community Hospital', 'HOSPITALS', 'Region X - Northern Mindanao', 'Lanao del Norte', 'Iligan City', 'Camague', 'Sister of Mercy Road, Camague', '9200', 'mercy@iligan.gov.ph', NULL, NULL, 'active', '2025-09-03 03:11:13', '2025-09-03 03:11:13', NULL),
-(14, 'Dr. Uy Hospital, Inc.', 'HOSPITALS', 'Region X - Northern Mindanao', 'Lanao del Norte', 'Iligan City', 'Poblacion', 'Roxas Avenue, Poblacion', '9200', 'dr.uy@iligan.gov.ph', NULL, NULL, 'active', '2025-09-03 03:11:13', '2025-09-03 03:11:13', NULL);
+(14, 'Dr. Uy Hospital, Inc.', 'HOSPI \TALS', 'Region X - Northern Mindanao', 'Lanao del Norte', 'Iligan City', 'Poblacion', 'Roxas Avenue, Poblacion', '9200', 'dr.uy@iligan.gov.ph', NULL, NULL, 'active', '2025-09-03 03:11:13', '2025-09-03 03:11:13', NULL);
 
 --
 -- Indexes for dumped tables

@@ -17,6 +17,11 @@
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Dashboard
                 </a>
+                <a href="{{ route('admin.user', 'All') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    User Management
+                </a>
                 <a href="{{ route('admin.agency') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
                     <span class="material-symbols-outlined mr-2">dashboard</span>
