@@ -11,8 +11,12 @@ class DashboardsController extends Controller
         return view('PAGES/BFP_BDRRMC/dashboard');
     }
 
-    public function admin () {
+    public function adminIndex () {
         
         return view('PAGES/admin/dashboard');
+    }
+
+    public function nurseIndex () {
+        return view('PAGES/hospital/dashboard');
     }
 }

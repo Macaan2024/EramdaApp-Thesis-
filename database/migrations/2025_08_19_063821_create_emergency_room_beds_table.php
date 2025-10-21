@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('agency_id')->constrained('agencies')->onDelete('cascade')->onUpdate('cascade');
             $table->integer('bed_number');
+            $table->string('bed_type');
+            $table->string('room_number');
             $table->string('availabilityStatus')->nullable();
             $table->timestamps();
         });
