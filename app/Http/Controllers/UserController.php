@@ -26,7 +26,11 @@ class UserController extends Controller
                 $query->where('agencyTypes', $status);
             })->paginate(10);
         } else {
-            $users = User::where('user_type', '!=', 'admin')->paginate(10);
+            $users = User::where('user_type', '!=', 'admin')
+                ->when($id, function ($query, $id) {
+                    return $query->where('agency_id', $id);
+                })
+                ->paginate(10);
         }
 
 

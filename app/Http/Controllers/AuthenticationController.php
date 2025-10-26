@@ -104,7 +104,7 @@ class AuthenticationController extends Controller
                     case 'BFP':
                         return redirect()->route('bfp.dashboard');
                     case 'HOSPITALS':
-                        return redirect()->route('hospital.dashboard');
+                        return redirect()->route('nurse-chief.dashboard');
                     default:
                         return back()->withErrors(['agencies' => 'No Agencies Assigned Yet']);
                 }

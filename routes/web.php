@@ -7,9 +7,11 @@ use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\EmergencyRoomBedController;
 use App\Http\Controllers\EmergencyVehiclesController;
 use App\Http\Controllers\IncidentReportsController;
+use App\Http\Controllers\IndividualController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\PersonnelRespondersController;
 use App\Http\Controllers\SubmittedReportController;
+use App\Http\Controllers\TreatmentServicesController;
 use App\Http\Controllers\UserController;
 
 
@@ -118,12 +120,23 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
 Route::prefix('nurse-chief')->name('nurse-chief.')->middleware('nurse-chief')->group(function () {
     Route::controller(DashboardsController::class)->group(function () {
-        Route::get('dashboard', 'nurseIndex')->name('dashboard');
+        Route::get('dashboard/{status?}', 'nurseIndex')->name('dashboard');
     });
     Route::controller(EmergencyRoomBedController::class)->group(function () {
         Route::get('bed', 'index')->name('bed');
         Route::post('submit/bed', 'submitBed')->name('submit-bed');
         Route::put('edit/bed/{id}', 'editBed')->name('edit-bed');
         Route::delete('delete/bed/{id}', 'deleteBed')->name('delete-bed');
+    });
+    Route::controller(TreatmentServicesController::class)->group(function () {
+        Route::get('services', 'index')->name('services');
+        Route::post('submit/services', 'submitServices')->name('submit-services');
+        Route::put('edit/services/{id}', 'editServices')->name('edit-services');
+        Route::delete('delete/services/{id}', 'deleteServices')->name('delete-services');
+    });
+    Route::controller(IndividualController::class)->group(function () {
+        Route::get('admit', 'index')->name('admit');
+        Route::post('submit/admit', 'submitIndividual')->name('submit-admit');
+        Route::patch('patient-release/{id}', 'releasePatient')->name('nurse-chief.release-patient');
     });
 });

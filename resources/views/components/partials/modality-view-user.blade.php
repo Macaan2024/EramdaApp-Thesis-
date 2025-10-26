@@ -1,6 +1,6 @@
 <!-- View Button -->
 <button onclick="toggleViewUserModal('{{ $user->id }}', true)"
-    class="bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-[Poppins] rounded-lg px-3 py-1.5 shadow-md transition transform hover:scale-105">
+    class="px-3 py-1.5 rounded-sm text-[12px] font-[Poppins] font-medium bg-blue-600 text-white hover:bg-blue-700 transition">
     View
 </button>
 
@@ -126,30 +126,30 @@
 
 <!-- JS -->
 <script>
-function toggleViewUserModal(id, show) {
-    const modal = document.getElementById(`viewUserModal-${id}`);
-    const box = document.getElementById(`viewUserModalBox-${id}`);
+    function toggleViewUserModal(id, show) {
+        const modal = document.getElementById(`viewUserModal-${id}`);
+        const box = document.getElementById(`viewUserModalBox-${id}`);
 
-    if (show) {
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            box.classList.remove('scale-95', 'opacity-0');
-            box.classList.add('scale-100', 'opacity-100');
-        }, 50);
-    } else {
-        box.classList.add('scale-95', 'opacity-0');
-        box.classList.remove('scale-100', 'opacity-100');
-        setTimeout(() => modal.classList.add('hidden'), 200);
-    }
-}
-
-// Close when clicking outside
-document.querySelectorAll('[id^="viewUserModal-"]').forEach(modal => {
-    modal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            const id = this.id.split('-')[2];
-            toggleViewUserModal(id, false);
+        if (show) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('scale-95', 'opacity-0');
+                box.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        } else {
+            box.classList.add('scale-95', 'opacity-0');
+            box.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => modal.classList.add('hidden'), 200);
         }
+    }
+
+    // Close when clicking outside
+    document.querySelectorAll('[id^="viewUserModal-"]').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                const id = this.id.split('-')[2];
+                toggleViewUserModal(id, false);
+            }
+        });
     });
-});
 </script>

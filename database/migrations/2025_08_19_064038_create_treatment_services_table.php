@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('agency_id')->constrained('agencies')->onUpdate('cascade')->onDelete('cascade');
             $table->string('serviceName');
             $table->string('category');
-            $table->string('description');
             $table->string('serviceAvailability');
             $table->timestamps();
         });

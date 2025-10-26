@@ -19,7 +19,7 @@ class EmergencyRoomBedController extends Controller
                     ->orWhere('bed_number', 'like', "%{$search}%")
                     ->orWhere('availabilityStatus', 'like', "%{$search}%");
             })
-            ->paginate(10);
+            ->orderBy('bed_type')->paginate(10);
 
         $bedsAvailable = $beds->where('availabilityStatus', 'Available')->count();
         $bedsUnavailable = $beds->where('availabilityStatus', 'Unavailable')->count();

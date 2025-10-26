@@ -76,7 +76,7 @@
 
             @elseif (auth()->user()->user_type === 'nurse-chief')
             <li>
-                <a href="{{ route('nurse-chief.dashboard') }}"
+                <a href="{{ route('nurse-chief.dashboard', 'All') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Dashboard
@@ -88,10 +88,15 @@
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Manage ER Beds
                 </a>
-                <a href="{{ route('nurse-chief.bed') }}"
+                <a href="{{ route('nurse-chief.services') }}"
                     class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
                     <span class="material-symbols-outlined mr-2">dashboard</span>
                     Manage Treatment Services
+                </a>
+                <a href="{{ route('nurse-chief.admit') }}"
+                    class="flex item-center p-2 hover:bg-blue-50 hover:text-black font-[Poppins] text-white text-[14px]">
+                    <span class="material-symbols-outlined mr-2">dashboard</span>
+                    Manage Admitted Patients
                 </a>
             </li>
             @endif
