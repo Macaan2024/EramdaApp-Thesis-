@@ -8,21 +8,6 @@
         </h6>
     </div>
 
-    @php
-    $addCount = 0;
-    $editCount = 0;
-    $deleteCount = 0;
-
-    foreach ($logs as $log) {
-    if ($log->emergencyVehicle) {
-    switch ($log->interaction_type) {
-    case 'Add': $addCount++; break;
-    case 'Update': $editCount++; break;
-    case 'Delete': $deleteCount++; break;
-    }
-    }
-    }
-    @endphp
 
     <!-- Stats Section -->
     <div class="flex flex-col lg:flex-row justify-between items-start gap-6 font-[Poppins] mb-6">
@@ -30,17 +15,21 @@
             <!-- Add -->
             <div class="bg-blue-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
                 <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Added</h3>
-                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $addCount }}</p>
+                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $addedCount }}</p>
             </div>
             <!-- Edit -->
             <div class="bg-green-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
                 <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Edited</h3>
-                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $editCount }}</p>
+                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $editedCount }}</p>
             </div>
             <!-- Delete -->
             <div class="bg-red-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
                 <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Deleted</h3>
-                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $deleteCount }}</p>
+                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $deletedCount }}</p>
+            </div>
+            <div class="bg-gray-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
+                <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Restored</h3>
+                <p class="text-[18px] sm:text-[20px] font-semibold">{{ $restoredCount }}</p>
             </div>
         </div>
     </div>
@@ -63,9 +52,16 @@
 
         <!-- Agency Filter -->
         <form class="w-full md:w-auto">
-            <select onchange="if (this.value) window.location.href='/admin/logs-vehicles/{{ $status }}/' + this.value"
+            <select
+                onchange="
+            if (this.value) {
+                window.location.href = '/admin/logs-vehicles/{{ $status }}/' + this.value;
+            } else {
+                window.location.href = '/admin/logs-vehicles/All';
+            }
+        "
                 class="block w-full p-3 text-[12px] sm:text-[13px] text-gray-800 border border-gray-300 rounded-[10px] bg-white shadow-sm 
-                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 <option value="">Select Agency</option>
                 @forelse ($agencies as $agency)
                 <option value="{{ $agency->id }}" {{ $id == $agency->id ? 'selected' : '' }}>
@@ -93,6 +89,9 @@
             <a href="/admin/logs-vehicles/Delete/{{ $id ?? '' }}"
                 class="px-5 py-2 rounded-[10px] border shadow-sm transition 
                 {{ $status === 'Delete' ? 'bg-red-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100' }}">Deleted</a>
+            <a href="/admin/logs-vehicles/Restored/{{ $id ?? '' }}"
+                class="px-5 py-2 rounded-[10px] border shadow-sm transition 
+                {{ $status === 'Restored' ? 'bg-red-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100' }}">Restored</a>
         </div>
     </div>
 
@@ -108,9 +107,8 @@
                     <th class="px-4 sm:px-6 py-3 text-left">Interaction</th>
                     <th class="px-4 sm:px-6 py-3 text-left">Vehicle</th>
                     <th class="px-4 sm:px-6 py-3 text-left">Plate #</th>
-                    <th class="px-4 sm:px-6 py-3 text-left">Created</th>
-                    <th class="px-4 sm:px-6 py-3 text-left">Updated</th>
-                    <th class="px-4 sm:px-6 py-3 text-left">Deleted</th>
+                    <th class="px-4 sm:px-6 py-3 text-left">Created At</th>
+                    <th class="px-4 sm:px-6 py-3 text-left">Updated At</th>
                     <th class="px-4 sm:px-6 py-3 text-left">Action</th>
                 </tr>
             </thead>
@@ -121,7 +119,7 @@
                     <td class="px-4 sm:px-6 py-3">
                         @if ($log->emergencyVehicle && $log->emergencyVehicle->vehicle_photo)
                         <img src="{{ asset('storage/' . $log->emergencyVehicle->vehicle_photo) }}"
-                            alt="Vehicle Image" class="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-[10px] border shadow-sm">
+                            alt="Vehicle Image" class="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-full border shadow-sm">
                         @else
                         <span class="text-gray-400">—</span>
                         @endif
@@ -144,9 +142,9 @@
                     <td class="px-4 sm:px-6 py-3">{{ $log->emergencyVehicle->plateNumber ?? '—' }}</td>
                     <td class="px-4 sm:px-6 py-3">{{ $log->created_at?->format('Y-m-d H:i') ?? '—' }}</td>
                     <td class="px-4 sm:px-6 py-3">{{ $log->updated_at?->format('Y-m-d H:i') ?? '—' }}</td>
-                    <td class="px-4 sm:px-6 py-3">{{ $log->emergencyVehicle?->deleted_at?->format('Y-m-d H:i') ?? '—' }}</td>
                     <td class="px-4 sm:px-6 py-3">
                         <div class="flex flex-row gap-4 items-center">
+
                             <button
                                 type="button"
                                 class="track-btn px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-[10px] bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md transition-all duration-200"
@@ -154,14 +152,6 @@
                                 Track
                             </button>
 
-                            <form action="{{ route('admin.logs-vehicle-delete', $log->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this log?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-[10px] bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200">
-                                    Delete
-                                </button>
-                            </form>
                         </div>
                     </td>
                 </tr>
@@ -176,78 +166,10 @@
         </table>
     </div>
 
-    <div class="mt-6 font-[Poppins] text-[12px] sm:text-[13px]">
-        @if ($logs->hasPages())
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {{-- Pagination Controls --}}
-            <div class="flex items-center space-x-1 sm:space-x-2">
-                {{-- Previous --}}
-                @if ($logs->onFirstPage())
-                <span class="px-3 py-2 bg-gray-300 text-white rounded-[10px] cursor-not-allowed flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span class="hidden sm:inline">Previous</span>
-                </span>
-                @else
-                <a href="{{ $logs->previousPageUrl() }}" class="px-3 py-2 bg-blue-600 text-white rounded-[10px] hover:bg-blue-700 transition flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span class="hidden sm:inline">Previous</span>
-                </a>
-                @endif
-
-                {{-- Page Numbers --}}
-                <div class="flex items-center space-x-1">
-                    @php
-                    $start = max($logs->currentPage() - 2, 1);
-                    $end = min($logs->currentPage() + 2, $logs->lastPage());
-                    @endphp
-
-                    @if ($start > 1)
-                    <a href="{{ $logs->url(1) }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-[10px] hover:bg-green-600 hover:text-white transition">1</a>
-                    @if ($start > 2)
-                    <span class="px-2 text-gray-500">...</span>
-                    @endif
-                    @endif
-
-                    @for ($page = $start; $page <= $end; $page++)
-                        @if ($page==$logs->currentPage())
-                        <span class="px-3 py-2 bg-green-600 text-white rounded-[10px] font-semibold">{{ $page }}</span>
-                        @else
-                        <a href="{{ $logs->url($page) }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-[10px] hover:bg-green-600 hover:text-white transition">{{ $page }}</a>
-                        @endif
-                        @endfor
-
-                        @if ($end < $logs->lastPage())
-                            @if ($end < $logs->lastPage() - 1)
-                                <span class="px-2 text-gray-500">...</span>
-                                @endif
-                                <a href="{{ $logs->url($logs->lastPage()) }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-[10px] hover:bg-green-600 hover:text-white transition">{{ $logs->lastPage() }}</a>
-                                @endif
-                </div>
-
-                {{-- Next --}}
-                @if ($logs->hasMorePages())
-                <a href="{{ $logs->nextPageUrl() }}" class="px-3 py-2 bg-blue-600 text-white rounded-[10px] hover:bg-blue-700 transition flex items-center gap-1">
-                    <span class="hidden sm:inline">Next</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-                @else
-                <span class="px-3 py-2 bg-gray-300 text-white rounded-[10px] cursor-not-allowed flex items-center gap-1">
-                    <span class="hidden sm:inline">Next</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </span>
-                @endif
-            </div>
-        </div>
-        @endif
+    <div class="mt-4 flex justify-center">
+        {{ $logs->appends(request()->except('logs_page'))->links() }}
     </div>
+
 
 
     <!-- Second Table ======================================= -->
@@ -257,19 +179,23 @@
 
     <!-- Status Buttons + Add Vehicle -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-        <div class="flex flex-wrap gap-3 text-[12px] sm:text-[13px] font-[Poppins]">
-            <a href="/admin/logs-vehicles/All/{{ $id ?? '' }}"
-                class="px-5 py-2 rounded-[10px] border shadow-sm transition 
-                {{ $status === 'All' ? 'bg-gray-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100' }}">All</a>
-            <a href="/admin/logs-vehicles/Add/{{ $id ?? '' }}"
-                class="px-5 py-2 rounded-[10px] border shadow-sm transition 
-                {{ $status === 'Add' ? 'bg-blue-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100' }}">Police Car</a>
-            <a href="/admin/logs-vehicles/Update/{{ $id ?? '' }}"
-                class="px-5 py-2 rounded-[10px] border shadow-sm transition 
-                {{ $status === 'Update' ? 'bg-green-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100' }}">Fire Truck</a>
-            <a href="/admin/logs-vehicles/Delete/{{ $id ?? '' }}"
-                class="px-5 py-2 rounded-[10px] border shadow-sm transition 
-                {{ $status === 'Delete' ? 'bg-red-600 text-white' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100' }}">Ambulance</a>
+
+        <div class="w-full lg:w-1/2 flex flex-wrap gap-4 justify-start">
+            <!-- Add -->
+            <div class="bg-blue-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
+                <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Police Car
+                    <p class="text-[18px] sm:text-[20px] font-semibold">{{ $policeCarCount }}</p>
+            </div>
+            <!-- Edit -->
+            <div class="bg-green-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
+                <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Fire Trucks
+                    <p class="text-[18px] sm:text-[20px] font-semibold">{{ $fireTruckCount }}</p>
+            </div>
+            <!-- Delete -->
+            <div class="bg-red-600 text-white rounded-[10px] px-6 py-4 shadow-md hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-[45%] sm:w-auto text-center">
+                <h3 class="text-[13px] sm:text-[14px] font-medium mb-1 opacity-90">Total Ambulance
+                    <p class="text-[18px] sm:text-[20px] font-semibold">{{ $ambulanceCount   }}</p>
+            </div>
         </div>
 
         <div class="w-full sm:w-auto">
@@ -310,18 +236,21 @@
                     <td class="px-4 sm:px-6 py-3">{{ $vehicle->plateNumber ?? '—' }}</td>
                     <td class="px-4 sm:px-6 py-3">{{ $vehicle->availabilityStatus ?? '—' }}</td>
                     <td class="px-4 sm:px-6 py-3">
-                        <button type="submit"
-                            class="px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-[10px] bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200">
+                        @if (!$vehicle->trashed()) {{-- Check if the vehicle is NOT soft deleted --}}
+                        <a href="{{ route('admin.logs-view-vehicles', $vehicle->id) }}"
+                            class="px-4 py-2 text-[12px] font-medium rounded-[10px] bg-blue-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200">
                             View
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-[10px] bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200">
-                            Edit
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-[10px] bg-red-600 text-white shadow-sm hover:bg-red-700 hover:shadow-md transition-all duration-200">
-                            Delete
-                        </button>
+                        </a>
+                        @else {{-- Vehicle is trashed --}}
+                        <form action="{{ route('admin.logs-restore-vehicles', $vehicle->id) }}" method="POST" class="inline">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit"
+                                class="px-4 py-2 text-[12px] sm:text-[13px] font-medium rounded-[10px] bg-green-600 text-white shadow-sm hover:bg-green-700 hover:shadow-md transition-all duration-200">
+                                Restore
+                            </button>
+                        </form>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -335,78 +264,8 @@
         </table>
     </div>
 
-    <div class="mt-6 font-[Poppins] text-[12px] sm:text-[13px]">
-        @if ($vehicles->hasPages())
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-
-            {{-- Pagination Controls --}}
-            <div class="flex items-center space-x-1 sm:space-x-2">
-                {{-- Previous --}}
-                @if ($vehicles->onFirstPage())
-                <span class="px-3 py-2 bg-gray-300 text-white rounded-[10px] cursor-not-allowed flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span class="hidden sm:inline">Previous</span>
-                </span>
-                @else
-                <a href="{{ $vehicles->previousPageUrl() }}" class="px-3 py-2 bg-blue-600 text-white rounded-[10px] hover:bg-blue-700 transition flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <span class="hidden sm:inline">Previous</span>
-                </a>
-                @endif
-
-                {{-- Page Numbers --}}
-                <div class="flex items-center space-x-1">
-                    @php
-                    $vStart = max($vehicles->currentPage() - 2, 1);
-                    $vEnd = min($vehicles->currentPage() + 2, $vehicles->lastPage());
-                    @endphp
-
-                    @if ($vStart > 1)
-                    <a href="{{ $vehicles->url(1) }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-[10px] hover:bg-green-600 hover:text-white transition">1</a>
-                    @if ($vStart > 2)
-                    <span class="px-2 text-gray-500">...</span>
-                    @endif
-                    @endif
-
-                    @for ($page = $vStart; $page <= $vEnd; $page++)
-                        @if ($page==$vehicles->currentPage())
-                        <span class="px-3 py-2 bg-green-600 text-white rounded-[10px] font-semibold">{{ $page }}</span>
-                        @else
-                        <a href="{{ $vehicles->url($page) }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-[10px] hover:bg-green-600 hover:text-white transition">{{ $page }}</a>
-                        @endif
-                        @endfor
-
-                        @if ($vEnd < $vehicles->lastPage())
-                            @if ($vEnd < $vehicles->lastPage() - 1)
-                                <span class="px-2 text-gray-500">...</span>
-                                @endif
-                                <a href="{{ $vehicles->url($vehicles->lastPage()) }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-[10px] hover:bg-green-600 hover:text-white transition">{{ $vehicles->lastPage() }}</a>
-                                @endif
-                </div>
-
-                {{-- Next --}}
-                @if ($vehicles->hasMorePages())
-                <a href="{{ $vehicles->nextPageUrl() }}" class="px-3 py-2 bg-blue-600 text-white rounded-[10px] hover:bg-blue-700 transition flex items-center gap-1">
-                    <span class="hidden sm:inline">Next</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-                @else
-                <span class="px-3 py-2 bg-gray-300 text-white rounded-[10px] cursor-not-allowed flex items-center gap-1">
-                    <span class="hidden sm:inline">Next</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </span>
-                @endif
-            </div>
-        </div>
-        @endif
+    <div class="mt-4 flex justify-center">
+        {{ $vehicles->appends(request()->except('vehicles_page'))->links() }}
     </div>
 
     <x-partials.stack-js />

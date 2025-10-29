@@ -34,6 +34,10 @@ class Log extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function submittedReport() {
+        return $this->belongsTo(SubmittedReport::class, 'submitted_report_id', 'id');
+    }
+
     public function personnelResponder()
     {
         return $this->belongsTo(PersonnelResponder::class, 'personnel_responder_id', 'id');
