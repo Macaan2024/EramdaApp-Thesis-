@@ -3,7 +3,7 @@
 
     <x-partials.navbar />
     <x-partials.sidebar />
-    <div class="p-4 sm:ml-64 mt-16">
+    <div class="sm:ml-64 mt-16">
         {{ $slot }}
     </div>
 </main>

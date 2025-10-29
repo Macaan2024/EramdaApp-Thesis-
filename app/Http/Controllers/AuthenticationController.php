@@ -87,6 +87,12 @@ class AuthenticationController extends Controller
                 // Admin override
                 if ($user->user_type === 'admin') {
                     return redirect()->route('admin.dashboard');
+                }elseif ($user->user_type === 'nurse-chief') {
+                    if ($user->account_status === 'Active') {
+                        return redirect()->route('nurse-chief.dashboard');
+                    }else {
+                        return redirect()->back()->with('error', 'User account deactivated');
+                    }
                 }
 
                 // Check agency type dynamically
@@ -98,7 +104,7 @@ class AuthenticationController extends Controller
                     case 'BFP':
                         return redirect()->route('bfp.dashboard');
                     case 'HOSPITALS':
-                        return redirect()->route('hospital.dashboard');
+                        return redirect()->route('nurse-chief.dashboard');
                     default:
                         return back()->withErrors(['agencies' => 'No Agencies Assigned Yet']);
                 }

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('individual_er_bed_lists', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('incident_id')->nullable()->constrained('incidents')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('individual_id')->constrained('individuals')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('emergency_room_bed_id')->constrained('emergency_room_beds')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('admitted_at')->nullable();
-            $table->string('remarks')->nullable();
+            $table->string('admit_status'); // Pending / Admitted / Discharge
             $table->timestamps();
         });
     }

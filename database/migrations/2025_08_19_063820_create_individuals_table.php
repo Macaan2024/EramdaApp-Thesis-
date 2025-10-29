@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('individuals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('incident_id')->constrained('incidents')->onUpdate('cascade')->onDelete('cascade');
             $table->string('individual_name');
             $table->string('individual_address');
             $table->string('individual_sex');
             $table->string('individual_contact_number');
             $table->string('injury_status');
-            $table->string('brought_to_hospital');
-            $table->string('position_or_location'); //seat position (for  passenger) or standing location (for pedestrian / witnesses)
-            $table->string('action_taken'); // Addmitted, Release. Given First Aid
+            $table->string('transportation_type');
+            $table->string('first_aid_applied'); // Addmitted, Release. Given First Aid
+            $table->string('incident_position'); //seat position (for  passenger) or standing location
             $table->timestamps();
         });
     }
